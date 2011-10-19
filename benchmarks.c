@@ -11,6 +11,7 @@
 /* Standard Libraries */
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 /* Local Headers */
 #include "benchmarks.h"
@@ -60,44 +61,44 @@ unsigned long long getMeasureOverhead(void)
 	return average;
 }
 
-void bogus_test_func0(void)
+int bogus_test_func0(void)
 {
-	return;
+	return rand();
 }
 
-void bogus_test_func1(int a1)
+int bogus_test_func1(int a1)
 {
-	return;
+	return rand();
 }
 
-void bogus_test_func2(int a1, int a2)
+int bogus_test_func2(int a1, int a2)
 {
-	return;
+	return rand();
 }
 
-void bogus_test_func3(int a1, int a2, int a3)
+int bogus_test_func3(int a1, int a2, int a3)
 {
-	return;
+	return rand();
 }
 
-void bogus_test_func4(int a1, int a2, int a3, int a4)
+int bogus_test_func4(int a1, int a2, int a3, int a4)
 {
-	return;
+	return rand();
 }
 
-void bogus_test_func5(int a1, int a2, int a3, int a4, int a5)
+int bogus_test_func5(int a1, int a2, int a3, int a4, int a5)
 {
-	return;
+	return rand();
 }
 
-void bogus_test_func6(int a1, int a2, int a3, int a4, int a5, int a6)
+int bogus_test_func6(int a1, int a2, int a3, int a4, int a5, int a6)
 {
-	return;
+	return rand();
 }
 
-void bogus_test_func7(int a1, int a2, int a3, int a4, int a5, int a6, int a7)
+int bogus_test_func7(int a1, int a2, int a3, int a4, int a5, int a6, int a7)
 {
-	return;
+	return rand();
 }
 
 void getProcedureCallOverhead(unsigned long long average[])
@@ -106,65 +107,75 @@ void getProcedureCallOverhead(unsigned long long average[])
 	unsigned long long time2;
 	unsigned long long loopOverhead;
 	int i;
+	int res;
+	
+	int i1 = rand();
+	int i2 = rand();
+	int i3 = rand();
+	int i4 = rand();
+	int i5 = rand();
+	int i6 = rand();
+	int i7 = rand();
 	
 	time1 = rdtsc();
 	for (i = 0; i < NUM_COLLECTIONS; i++) {
+		res = rand();
 	}
 	time2 = rdtsc();
 	loopOverhead = (time2 - time1) / (unsigned long long) NUM_COLLECTIONS;
 	
 	time1 = rdtsc();
 	for (i = 0; i < NUM_COLLECTIONS; i++) {
-		bogus_test_func0();
+		res = bogus_test_func0();
 	}
 	time2 = rdtsc();
 	average[0] = ((time2 - time1) / (unsigned long long) NUM_COLLECTIONS) - loopOverhead;
 	
 	time1 = rdtsc();
 	for (i = 0; i < NUM_COLLECTIONS; i++) {
-		bogus_test_func1(1);
+		res = bogus_test_func1(i1);
 	}
 	time2 = rdtsc();
 	average[1] = ((time2 - time1) / (unsigned long long) NUM_COLLECTIONS) - loopOverhead;
 	
 	time1 = rdtsc();
 	for (i = 0; i < NUM_COLLECTIONS; i++) {
-		bogus_test_func2(1,2);
+		res = bogus_test_func2(i1,i2);
 	}
 	time2 = rdtsc();
 	average[2] = ((time2 - time1) / (unsigned long long) NUM_COLLECTIONS) - loopOverhead;
 	
 	time1 = rdtsc();
 	for (i = 0; i < NUM_COLLECTIONS; i++) {
-		bogus_test_func3(1,2,3);
+		res = bogus_test_func3(i1,i2,i3);
 	}
 	time2 = rdtsc();
 	average[3] = ((time2 - time1) / (unsigned long long) NUM_COLLECTIONS) - loopOverhead;
 	
 	time1 = rdtsc();
 	for (i = 0; i < NUM_COLLECTIONS; i++) {
-		bogus_test_func4(1,2,3,4);
+		res = bogus_test_func4(i1,i2,i3,i4);
 	}
 	time2 = rdtsc();
 	average[4] = ((time2 - time1) / (unsigned long long) NUM_COLLECTIONS) - loopOverhead;
 	
 	time1 = rdtsc();
 	for (i = 0; i < NUM_COLLECTIONS; i++) {
-		bogus_test_func5(1,2,3,4,5);
+		res = bogus_test_func5(i1,i2,i3,i4,i5);
 	}
 	time2 = rdtsc();
 	average[5] = ((time2 - time1) / (unsigned long long) NUM_COLLECTIONS) - loopOverhead;
 	
 	time1 = rdtsc();
 	for (i = 0; i < NUM_COLLECTIONS; i++) {
-		bogus_test_func6(1,2,3,4,5,6);
+		res = bogus_test_func6(i1,i2,i3,i4,i5,i6);
 	}
 	time2 = rdtsc();
 	average[6] = ((time2 - time1) / (unsigned long long) NUM_COLLECTIONS) - loopOverhead;
 	
 	time1 = rdtsc();
 	for (i = 0; i < NUM_COLLECTIONS; i++) {
-		bogus_test_func7(1,2,3,4,5,6,7);
+		res = bogus_test_func7(i1,i2,i3,i4,i5,i6,i7);
 	}
 	time2 = rdtsc();
 	average[7] = ((time2 - time1) / (unsigned long long) NUM_COLLECTIONS) - loopOverhead;
