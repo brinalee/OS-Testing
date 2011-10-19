@@ -63,42 +63,42 @@ unsigned long long getMeasureOverhead(void)
 
 int bogus_test_func0(void)
 {
-	return rand();
+	return 0;
 }
 
 int bogus_test_func1(int a1)
 {
-	return rand();
+	return 0;
 }
 
 int bogus_test_func2(int a1, int a2)
 {
-	return rand();
+	return 0;
 }
 
 int bogus_test_func3(int a1, int a2, int a3)
 {
-	return rand();
+	return 0;
 }
 
 int bogus_test_func4(int a1, int a2, int a3, int a4)
 {
-	return rand();
+	return 0;
 }
 
 int bogus_test_func5(int a1, int a2, int a3, int a4, int a5)
 {
-	return rand();
+	return 0;
 }
 
 int bogus_test_func6(int a1, int a2, int a3, int a4, int a5, int a6)
 {
-	return rand();
+	return 0;
 }
 
 int bogus_test_func7(int a1, int a2, int a3, int a4, int a5, int a6, int a7)
 {
-	return rand();
+	return 0;
 }
 
 void getProcedureCallOverhead(unsigned long long average[])
@@ -119,7 +119,7 @@ void getProcedureCallOverhead(unsigned long long average[])
 	
 	time1 = rdtsc();
 	for (i = 0; i < NUM_COLLECTIONS; i++) {
-		res = rand();
+		res = 0;
 	}
 	time2 = rdtsc();
 	loopOverhead = (time2 - time1) / (unsigned long long) NUM_COLLECTIONS;
