@@ -1,5 +1,5 @@
 PROGNAME = os_meas
-CC = gcc
+CC = g++
 #LIBS = -pthread 
 LIBS = 
 INCLUDES = -I.
@@ -8,8 +8,9 @@ LDFLAGS =
 
 OBJECTS = main.o \
           utils.o \
+	  benchmarks.o \
           
-CFLAGS = -Wall -pedantic 
+CFLAGS = -Wall -O0 -finline-functions
 
 all: $(PROGNAME)
 

@@ -48,3 +48,17 @@ double calculate_average(int* array_ints, int num_ints)
     average = (double)(sum) / num_ints;
     return average;
 }
+
+unsigned long long calculate_average_long_long(unsigned long long* array_longs, int num_longs)
+{
+    int i;
+    unsigned long long sum = 0;
+    
+    for (i = 0; i < num_longs; i++)
+    {
+        sum += array_longs[i];
+    }
+
+    return sum / ((unsigned long long) num_longs);
+}
+
