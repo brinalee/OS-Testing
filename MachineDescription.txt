@@ -1,0 +1,29 @@
+Processor Model: Intel(R) Core(TM)2 Quad CPU Q6600
+Cycle Time: 2.40 GHz
+Number of Cores: 4
+L1 instruction cache size: 4 x 32KB
+L1 data cache size: 4 x 32KB
+L2 Cache Size: 2 x 4096KB (each L2 cache is shared between 2 cores)
+Bus Speed: 1066 MHz
+RAM size: 3916 MB
+RAM Description: 4 x 1GB DDR2 667MHz
+Instruction Set: 64-bit
+
+Disk Info:
+Model: Hitachi HDT725025VLA380
+Formware Revision: V5DOA73A
+Capacity: 250 GB
+RPM: 7,200
+Cache Size: 8 MB
+Average Seek Time: 8.5 ms
+
+Network Card Speed: 1000 Mbps
+
+Operating System: Ubuntu
+Release: 10.04.3
+Linux Kernel Info:
+Version: 2
+Major Revision: 6
+Minor Revision: 32
+Immediate bug fixing: 28
+Distribution: generic
