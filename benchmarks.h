@@ -46,5 +46,9 @@ void getProcedureCallOverhead(long long average[]);
 
 void printSingleProcessCreateTime(void);
 
+void* thread_run(void* llu_ptr);
+
+unsigned long long getSingleThreadCreateTime(void);
+
 
 #endif

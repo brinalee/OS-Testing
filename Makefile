@@ -9,15 +9,15 @@ LDFLAGS =
 OBJECTS = utils.o \
 	  benchmarks.o \
           
-CFLAGS = -Wall -O0 -finline-functions
+CFLAGS = -Wall -O0 -finline-functions -lpthread
 
 all: main processStartOverhead
 
 main: main.o $(OBJECTS)
-	$(CC) -o $(INCLUDES) $^ -o $@
+	$(CC) -o $(INCLUDES) $^ -o $@ -lpthread
 
 processStartOverhead: processStartOverhead.o $(OBJECTS)
-	$(CC) -o $(INCLUDES) $^ -o $@
+	$(CC) -o $(INCLUDES) $^ -o $@ -lpthread
 
 $(OBJECTS): Makefile
 

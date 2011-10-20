@@ -15,6 +15,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <pthread.h>
 
 /* Local Headers */
 #include "benchmarks.h"
@@ -214,4 +215,32 @@ void printSingleProcessCreateTime(void)
 		//spanTime = secondTime - firstTime;
 	}
 	return;
+}
+
+void* thread_run(void* llu_ptr)
+{
+	unsigned long long time = rdtsc();
+	//printf("Child: time=%llu\n", time);
+	unsigned long long* outTime = (unsigned long long*)llu_ptr;
+	*outTime = time;
+	return 0;
+}
+
+unsigned long long getSingleThreadCreateTime(void)
+{
+	unsigned long long firstTime = 0;
+	unsigned long long secondTime = 0;
+	pthread_t thread;
+	int rc;
+	
+	firstTime = rdtsc();
+	rc = pthread_create(&thread, NULL, thread_run, (void *)(&secondTime));
+	if (rc){
+		printf("ERROR; return code from pthread_create() is %d\n", rc);
+		return 0;
+	}
+	pthread_join(thread, NULL);
+	//printf("Parent: secondTime=%llu\n", secondTime);
+	return secondTime - firstTime;
+	
 }
