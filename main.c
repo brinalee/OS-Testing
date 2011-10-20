@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 	printf("7 args - %lli\n", callAvgs[7]);
    
 
-	time = getSingleThreadCreateTime();
+	time = getSingleThreadCreateOverhead();
 	printf("Thread creation overhead is %llu cycles\n", time);
     exit(1);
     

@@ -242,5 +242,13 @@ unsigned long long getSingleThreadCreateTime(void)
 	pthread_join(thread, NULL);
 	//printf("Parent: secondTime=%llu\n", secondTime);
 	return secondTime - firstTime;
-	
+}
+
+unsigned long long getSingleThreadCreateOverhead(void)
+{
+	unsigned long long total = 0;
+	for (int i = 0; i < NUM_COLLECTIONS; i++) {
+		total += getSingleThreadCreateTime();
+	}
+	return total / ((unsigned long long) NUM_COLLECTIONS);
 }

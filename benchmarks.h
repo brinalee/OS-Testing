@@ -50,5 +50,5 @@ void* thread_run(void* llu_ptr);
 
 unsigned long long getSingleThreadCreateTime(void);
 
-
+unsigned long long getSingleThreadCreateOverhead(void);
 #endif
