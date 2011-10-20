@@ -12,6 +12,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 /* Local Headers */
 #include "benchmarks.h"
@@ -180,4 +183,35 @@ void getProcedureCallOverhead(long long average[])
 	time2 = rdtsc();
 	average[7] = ((time2 - time1) / (long long) NUM_COLLECTIONS) - loopOverhead;
 
+}
+
+void printSingleProcessCreateTime(void)
+{
+	pid_t piD;
+	unsigned long long firstTime = 0;
+	unsigned long long secondTime = 0;
+	//unsigned long long spanTime = 0;
+	//globalTime = 0;
+	int childExitStatus;
+
+	
+	firstTime = rdtsc();
+	piD = fork();
+	secondTime = rdtsc();
+	if (piD == 0) {
+		fprintf(stderr, "%llu\n", secondTime);
+		fflush(stderr);
+		//printf("child now, secondTime = %llu\n", secondTime);
+		//globalTime = secondTime;
+		//printf("child now, globalTime = %llu\n", globalTime);
+		exit(1);
+	} else {
+		waitpid(piD, &childExitStatus, 0);
+		printf("%llu,%llu\n", firstTime, secondTime);
+		fflush(stdout);
+		//printf("firstTime = %llu, secondTime = %llu, globalTime = %llu\n", firstTime, secondTime, globalTime);
+		//secondTime = (globalTime < secondTime) ? globalTime : secondTime;
+		//spanTime = secondTime - firstTime;
+	}
+	return;
 }

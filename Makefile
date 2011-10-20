@@ -1,4 +1,4 @@
-PROGNAME = os_meas
+# PROGNAME = os_meas
 CC = g++
 #LIBS = -pthread 
 LIBS = 
@@ -6,16 +6,18 @@ INCLUDES = -I.
 #LDFLAGS = -Llibs/
 LDFLAGS = 
 
-OBJECTS = main.o \
-          utils.o \
+OBJECTS = utils.o \
 	  benchmarks.o \
           
 CFLAGS = -Wall -O0 -finline-functions
 
-all: $(PROGNAME)
+all: main processStartOverhead
 
-$(PROGNAME): $(OBJECTS)
-	$(CC) -o $(PROGNAME) $(OBJECTS) $(LIBS) $(INCLUDES) $(LDFLAGS)
+main: main.o $(OBJECTS)
+	$(CC) -o $(INCLUDES) $^ -o $@
+
+processStartOverhead: processStartOverhead.o $(OBJECTS)
+	$(CC) -o $(INCLUDES) $^ -o $@
 
 $(OBJECTS): Makefile
 
@@ -23,4 +25,4 @@ $(OBJECTS): Makefile
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o $@ $< 
 
 clean:
-	rm *.o $(PROGNAME)
+	rm *.o main processStartOverhead

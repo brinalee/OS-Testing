@@ -18,7 +18,7 @@
     Constants
 ======================================================================*/
 
-const int NUM_COLLECTIONS = 1000000;
+const int NUM_COLLECTIONS = 100000;
 
 /*=====================================================================
     Functions
@@ -43,5 +43,8 @@ int bogus_test_func6(int a1, int a2, int a3, int a4, int a5, int a6);
 int bogus_test_func7(int a1, int a2, int a3, int a4, int a5, int a6, int a7);
 
 void getProcedureCallOverhead(long long average[]);
+
+void printSingleProcessCreateTime(void);
+
 
 #endif
