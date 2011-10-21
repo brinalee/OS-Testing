@@ -35,7 +35,9 @@ int main(int argc, char *argv[])
 	
 	timeS = getSystemCallOverhead();
 	printf("Syscall overhead is %lli cycles\n", timeS);
-   
+	
+	timeS = getThreadContextSwitchOverhead();
+	printf("Thread context switch overhead is %llu cycles\n", timeS);
 
 	time = getSingleThreadRunOverhead();
 	printf("Thread run overhead is %llu cycles\n", time);

@@ -48,6 +48,12 @@ void printSingleProcessCreateTime(void);
 
 void* thread_run(void* llu_ptr);
 
+void* thread_switch(void* idt);
+
+void* thread_test(void* idt);
+
+long long getThreadContextSwitchOverhead(void);
+
 unsigned long long getSingleThreadRunTime(void);
 
 unsigned long long getSingleThreadRunOverhead(void);
