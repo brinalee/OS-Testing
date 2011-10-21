@@ -490,10 +490,12 @@ long long getSingleProcessRunOverhead(void)
 	totalOverhead = getSingleProcessRunTime();
 	condOverhead = 0;
 	
-	int res = 20;
+	int res = 10;
 	int step = NUM_COLLECTIONS/res;
 	int prog = 0;
 	
+	printf("Creating, running, and ending a process %i times ... ", NUM_COLLECTIONS);
+	fflush(stdout);
 	for (int i = 0; i < NUM_COLLECTIONS; i++)
 	{
 		if (i >= prog) {
