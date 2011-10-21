@@ -533,7 +533,7 @@ long long getSystemCallOverhead(void)
 	time1 = rdtsc();
 	for (i = 0; i < NUM_COLLECTIONS; i++)
 	{
-		res = dup(1);
+		res = getpid();
 	}
 	time2 = rdtsc();
 	
