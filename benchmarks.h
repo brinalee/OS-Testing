@@ -48,7 +48,16 @@ void printSingleProcessCreateTime(void);
 
 void* thread_run(void* llu_ptr);
 
-unsigned long long getSingleThreadCreateTime(void);
+unsigned long long getSingleThreadRunTime(void);
 
-unsigned long long getSingleThreadCreateOverhead(void);
+unsigned long long getSingleThreadRunOverhead(void);
+
+unsigned long long getSingleProcessRunTime(void);
+
+unsigned long long getSingleProcessCondOverhead(void);
+
+long long getSingleProcessRunOverhead(void);
+
+long long getSystemCallOverhead(void);
+
 #endif

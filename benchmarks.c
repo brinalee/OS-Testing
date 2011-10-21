@@ -11,6 +11,7 @@
 /* Standard Libraries */
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <time.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -219,36 +220,157 @@ void printSingleProcessCreateTime(void)
 
 void* thread_run(void* llu_ptr)
 {
-	unsigned long long time = rdtsc();
+	//unsigned long long time = rdtsc();
 	//printf("Child: time=%llu\n", time);
-	unsigned long long* outTime = (unsigned long long*)llu_ptr;
-	*outTime = time;
+	//unsigned long long* outTime = (unsigned long long*)llu_ptr;
+	//*outTime = time;
 	return 0;
 }
 
-unsigned long long getSingleThreadCreateTime(void)
+unsigned long long getSingleThreadRunTime(void)
 {
 	unsigned long long firstTime = 0;
-	unsigned long long secondTime = 0;
+	unsigned long long secondTime1 = 0;
+	unsigned long long secondTime2 = 0;
 	pthread_t thread;
 	int rc;
 	
 	firstTime = rdtsc();
-	rc = pthread_create(&thread, NULL, thread_run, (void *)(&secondTime));
+	rc = pthread_create(&thread, NULL, thread_run, (void *)(&secondTime2));
+	pthread_join(thread, NULL);
+	secondTime1 = rdtsc();
+	
 	if (rc){
 		printf("ERROR; return code from pthread_create() is %d\n", rc);
 		return 0;
 	}
-	pthread_join(thread, NULL);
+	//secondTime1 = (secondTime1 < secondTime2) ? secondTime1 : secondTime2;
 	//printf("Parent: secondTime=%llu\n", secondTime);
-	return secondTime - firstTime;
+	return secondTime1 - firstTime;
 }
 
-unsigned long long getSingleThreadCreateOverhead(void)
+unsigned long long getSingleThreadRunOverhead(void)
 {
+	//unsigned long long minTime = getSingleThreadRunTime();
 	unsigned long long total = 0;
 	for (int i = 0; i < NUM_COLLECTIONS; i++) {
-		total += getSingleThreadCreateTime();
+		total += getSingleThreadRunTime();
+		//minTime = (nextTime < minTime) ? nextTime : minTime;
 	}
 	return total / ((unsigned long long) NUM_COLLECTIONS);
+}
+
+unsigned long long getSingleProcessRunTime(void)
+{
+	pid_t piD;
+	unsigned long long time1, time2;//, condOverhead;
+	time2 = 0;
+	int childExitStatus;
+	
+	time1 = rdtsc();
+	piD = fork();
+	if (piD == 0) {
+		//fprintf(stderr, "%llu\n", secondTime);
+		//fflush(stderr);
+		//printf("child now, secondTime = %llu\n", secondTime);
+		//globalTime = secondTime;
+		//printf("child now, globalTime = %llu\n", globalTime);
+		exit(1);
+	} else {
+		waitpid(piD, &childExitStatus, 0);
+		time2 = rdtsc();
+		//printf("%llu,%llu\n", firstTime, secondTime);
+		//fflush(stdout);
+		//printf("firstTime = %llu, secondTime = %llu, globalTime = %llu\n", firstTime, secondTime, globalTime);
+		//secondTime = (globalTime < secondTime) ? globalTime : secondTime;
+		//spanTime = secondTime - firstTime;
+	}
+	return time2 - time1;
+}
+
+unsigned long long getSingleProcessCondOverhead(void)
+{
+	pid_t piD;
+	unsigned long long time1, time2, condOverhead;
+	time2 = 0;
+	condOverhead = 0;
+	
+	
+	for (int i = 0; i < NUM_COLLECTIONS; i++)
+	{
+		piD = 0;
+		time1 = rdtsc();
+		if (piD == 0) {
+			time2 = rdtsc();
+		} else {
+			time2 = 0;
+		}
+		condOverhead += (time2 - time1);
+	
+		piD = 1;
+		time1 = rdtsc();
+		if (piD == 0) {
+			time2 = 0;
+		} else {
+			time2 = rdtsc();
+		}
+		condOverhead += (time2 - time1);
+	}
+	return condOverhead / ((unsigned long long) NUM_COLLECTIONS);
+}
+
+long long getSingleProcessRunOverhead(void)
+{
+	long long totalOverhead, condOverhead;
+	totalOverhead = getSingleProcessRunTime();
+	condOverhead = 0;
+	
+	int res = 25;
+	int step = NUM_COLLECTIONS/res;
+	int prog = 0;
+	
+	for (int i = 0; i < NUM_COLLECTIONS; i++)
+	{
+		if (i >= prog) {
+			printf("%d%s > ", (i * 100)/NUM_COLLECTIONS, "%");
+			fflush(stdout);
+			prog += step;
+		}
+		totalOverhead += getSingleProcessRunTime();
+	}
+	printf("\n");
+	fflush(stdout);
+	
+	totalOverhead = totalOverhead / ((unsigned long long) NUM_COLLECTIONS);
+	//printf("totalOverhead = %lli\n", totalOverhead);
+	fflush(stdout);
+	condOverhead = getSingleProcessCondOverhead();
+	//printf("condOverhead = %lli\n", condOverhead);
+	fflush(stdout);
+	
+	return totalOverhead - condOverhead;
+}
+
+long long getSystemCallOverhead(void)
+{
+	long long time1, time2, loopOverhead;
+	int res;
+	int i;
+	
+	time1 = rdtsc();
+	for (i = 0; i < NUM_COLLECTIONS; i++)
+	{
+		res = 0;
+	}
+	time2 = rdtsc();
+	loopOverhead = (time2 - time1) / (long long) NUM_COLLECTIONS;
+	
+	time1 = rdtsc();
+	for (i = 0; i < NUM_COLLECTIONS; i++)
+	{
+		res = dup(1);
+	}
+	time2 = rdtsc();
+	
+	return ((time2 - time1) / (long long) NUM_COLLECTIONS) - loopOverhead;
 }

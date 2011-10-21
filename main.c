@@ -14,6 +14,7 @@
 int main(int argc, char *argv[])
 {
     unsigned long long time;
+	long long timeS;
     
     time = getMeasureOverhead();
     
@@ -31,10 +32,16 @@ int main(int argc, char *argv[])
 	printf("5 args - %lli\n", callAvgs[5]);
 	printf("6 args - %lli\n", callAvgs[6]);
 	printf("7 args - %lli\n", callAvgs[7]);
+	
+	timeS = getSystemCallOverhead();
+	printf("Syscall overhead is %lli cycles\n", timeS);
    
 
-	time = getSingleThreadCreateOverhead();
-	printf("Thread creation overhead is %llu cycles\n", time);
+	time = getSingleThreadRunOverhead();
+	printf("Thread run overhead is %llu cycles\n", time);
+	
+	timeS = getSingleProcessRunOverhead();
+	printf("Process run overhead is %lli cycles\n", timeS);
     exit(1);
     
 }
