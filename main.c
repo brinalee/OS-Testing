@@ -40,17 +40,18 @@ int main(int argc, char *argv[])
 	timeS = getSystemCallOverhead();
 	printf("Syscall overhead is %lli cycles\n", timeS);
 	
-	timeS = getThreadContextSwitchOverhead();
+	unsigned long long threadRun = getSingleThreadRunOverhead();
+	printf("Thread run overhead is %llu cycles\n", threadRun);
+	
+	unsigned long long procRun = getSingleProcessRunOverhead();
+	printf("Process run overhead is %lli cycles\n", procRun);
+	
+	timeS = getThreadContextSwitchOverhead(threadRun);
 	printf("Thread context switch overhead is %llu cycles\n", timeS);
 	
-	timeS = getProcessContextSwitchOverhead();
+	timeS = getProcessContextSwitchOverhead(procRun);
 	printf("Process context switch overhead is %llu cycles\n", timeS);
 
-	time = getSingleThreadRunOverhead();
-	printf("Thread run overhead is %llu cycles\n", time);
-	
-	timeS = getSingleProcessRunOverhead();
-	printf("Process run overhead is %lli cycles\n", timeS);
     exit(1);
     
 }

@@ -259,7 +259,7 @@ void* thread_switch(void* idt)
 	return 0;
 }
 
-long long getThreadContextSwitchOverhead(void)
+long long getThreadContextSwitchOverhead(unsigned long long threadRunOverhead)
 {
 	pthread_t thread1;
 	unsigned long long time1, time2;
@@ -279,7 +279,7 @@ long long getThreadContextSwitchOverhead(void)
 	time2 = rdtsc();
 	
 	
-	return (time2 - time1) / numThreadSwitches;
+	return (time2 - time1 - threadRunOverhead) / numThreadSwitches;
 }
 
 unsigned long long getSingleThreadRunTime(void)
@@ -344,7 +344,7 @@ unsigned long long getSingleProcessRunTime(void)
 	return time2 - time1;
 }
 
-unsigned long long getProcessContextSwitchOverhead(void)
+unsigned long long getProcessContextSwitchOverhead(unsigned long long processRunOverhead)
 {
 	unsigned long long time1, time2;
 	int childExitStatus;
@@ -378,7 +378,7 @@ unsigned long long getProcessContextSwitchOverhead(void)
 	//printf("time2-time1=%llu\n", time2-time1);
 	//fflush(stdout);
 	
-	return (time2 - time1) / totalSwitches;
+	return (time2 - time1 - processRunOverhead) / totalSwitches;
 }
 
 unsigned long long getSingleProcessCondOverhead(void)

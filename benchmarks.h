@@ -52,7 +52,7 @@ void* thread_run(void* llu_ptr);
 
 void* thread_switch(void* idt);
 
-long long getThreadContextSwitchOverhead(void);
+long long getThreadContextSwitchOverhead(unsigned long long threadRunOverhead);
 
 unsigned long long getSingleThreadRunTime(void);
 
@@ -60,7 +60,7 @@ unsigned long long getSingleThreadRunOverhead(void);
 
 unsigned long long getSingleProcessRunTime(void);
 
-unsigned long long getProcessContextSwitchOverhead(void);
+unsigned long long getProcessContextSwitchOverhead(unsigned long long processRunOverhead);
 
 unsigned long long getSingleProcessCondOverhead(void);
 
