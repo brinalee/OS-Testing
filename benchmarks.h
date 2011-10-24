@@ -26,6 +26,8 @@ const int NUM_COLLECTIONS = 100000;
 
 unsigned long long getMeasureOverhead(void);
 
+unsigned long long getLoopOverhead(void);
+
 int bogus_test_func0(void);
 
 int bogus_test_func1(int a1);
@@ -59,6 +61,8 @@ unsigned long long getSingleThreadRunTime(void);
 unsigned long long getSingleThreadRunOverhead(void);
 
 unsigned long long getSingleProcessRunTime(void);
+
+unsigned long long getProcessContextSwitchTime(void);
 
 unsigned long long getSingleProcessCondOverhead(void);
 

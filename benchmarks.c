@@ -80,6 +80,20 @@ unsigned long long getMeasureOverhead(void)
 	return average;
 }
 
+unsigned long long getLoopOverhead(void)
+{
+	unsigned long long time1;
+	unsigned long long time2;
+	int i;
+	
+	time1 = rdtsc();
+	for (i = 0; i < NUM_COLLECTIONS; i++) {
+	}
+	time2 = rdtsc();
+	
+	return (time2 - time1) / ((unsigned long long) NUM_COLLECTIONS);
+}
+
 int bogus_test_func0(void)
 {
 	return 0;
@@ -243,6 +257,8 @@ void* thread_run(void* llu_ptr)
 
 void* thread_switch(void* idt)
 {
+	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+	
 	pthread_mutex_lock(&StartThreads);
 	pthread_mutex_unlock(&StartThreads);
 	
@@ -270,6 +286,7 @@ void* thread_switch(void* idt)
 
 void* thread_test(void* idt)
 {
+	//pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 	//pthread_mutex_lock(&TestEnd);
 	pthread_mutex_lock(&TestStart);
 	pthread_mutex_unlock(&TestStart);
@@ -330,6 +347,7 @@ long long getThreadContextSwitchOverhead(void)
 	
 	pthread_create(&thread1, NULL, thread_switch, (void*) (&id1));
 	pthread_create(&thread2, NULL, thread_switch, (void*) (&id2));
+	
 	pthread_detach(thread1);
 	pthread_detach(thread2);
 	
@@ -349,6 +367,9 @@ long long getThreadContextSwitchOverhead(void)
 	
 	pthread_mutex_lock(&EndThreads);
 	time2 = rdtsc();
+	
+	pthread_cancel(thread1);
+	pthread_cancel(thread2);
 	
 	//printf("ContextSwitchCounter=%llu\n", ContextSwitchCounter);
 	//fflush(stdout);
@@ -451,6 +472,57 @@ unsigned long long getSingleProcessRunTime(void)
 		//spanTime = secondTime - firstTime;
 	}
 	return time2 - time1;
+}
+
+unsigned long long getProcessContextSwitchTime(void)
+{
+	//pid_t parentPID = getpid();
+	pid_t childPID1 = -1;
+	pid_t childPID2 = -1;
+	int firstPID, switchPID;
+	unsigned long long time1, time2, totalTime, numSwitches;
+	time1 = 0;
+	time2 = 0;
+	totalTime = 0;
+	numSwitches = 0;
+	
+	firstPID = vfork();
+	
+	if (firstPID == 0)
+	{ // child 1's execution domain
+		childPID1 = getpid();
+		
+		switchPID = vfork();
+		time2 = rdtsc();
+		totalTime += time2 - time1;
+		
+		if (switchPID == 0)
+		{ // child 2's execution domain
+			childPID2 = getpid();
+			
+			while (numSwitches < (unsigned long long) NUM_COLLECTIONS)
+			{
+				++numSwitches;
+				time1 = rdtsc();
+				//yield(childPID1);
+				time2 = rdtsc();
+				totalTime += time2 - time1;
+			}
+			exit(1);
+		}
+		
+		while (numSwitches < (unsigned long long) NUM_COLLECTIONS)
+		{
+			++numSwitches;
+			time1 = rdtsc();
+			//yield(childPID2);
+			time2 = rdtsc();
+			totalTime += time2 - time1;
+		}
+		exit(1);
+	}
+	
+	return totalTime / numSwitches;
 }
 
 unsigned long long getSingleProcessCondOverhead(void)

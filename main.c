@@ -19,6 +19,10 @@ int main(int argc, char *argv[])
     time = getMeasureOverhead();
     
     printf("Measurement overhead is %llu cycles\n", time);
+	
+	time = getLoopOverhead();
+	
+	 printf("Loop overhead is %llu cycles per iteration\n", time);
 
     long long callAvgs[8];
     getProcedureCallOverhead(callAvgs);
