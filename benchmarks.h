@@ -64,6 +64,8 @@ unsigned long long getSingleProcessRunTime(void);
 
 unsigned long long getProcessContextSwitchTime(void);
 
+unsigned long long getProcessContextSwitchOverhead(void);
+
 unsigned long long getSingleProcessCondOverhead(void);
 
 long long getSingleProcessRunOverhead(void);

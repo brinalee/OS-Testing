@@ -17,6 +17,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <sched.h>
 
 /* Local Headers */
 #include "benchmarks.h"
@@ -465,6 +466,7 @@ unsigned long long getSingleProcessRunTime(void)
 	} else {
 		waitpid(piD, &childExitStatus, 0);
 		time2 = rdtsc();
+		//printf("childExitStatus=%d\n", childExitStatus);
 		//printf("%llu,%llu\n", firstTime, secondTime);
 		//fflush(stdout);
 		//printf("firstTime = %llu, secondTime = %llu, globalTime = %llu\n", firstTime, secondTime, globalTime);
@@ -479,28 +481,72 @@ unsigned long long getProcessContextSwitchTime(void)
 	unsigned long long time1, time2;
 	int childExitStatus;
 	pid_t piD;
-	int numSwitches = NUM_COLLECTIONS / 2;
-	int switchCount = 0;
+	
+	long long totalSwitches = 100000000;
+	long long switchCount = 0;
+	long long localSwitches = totalSwitches / 2;
 	
 	time1 = rdtsc();
 	piD = fork();
 	if (piD == 0)
 	{ // child 1's execution domain
-		for (; switchCount < numSwitches; switchCount ++)
+		for (; switchCount < localSwitches; switchCount ++)
 		{
 			sched_yield();
 		}
 		exit(1);
 	} else {
-		for (; switchCount < numSwitches; switchCount ++)
+		for (; switchCount < localSwitches; switchCount ++)
 		{
 			sched_yield();
 		}
 		waitpid(piD, &childExitStatus, 0);
+		//printf("childExitStatus=%d\n", childExitStatus);
 		time2 = rdtsc();
 	}
 	
-	return (time2 - time1) / ((unsigned long long) NUM_COLLECTIONS);
+	//printf("time1=%llu, ", time1);
+	//printf("time2=%llu, ", time2);
+	//printf("time2-time1=%llu\n", time2-time1);
+	//fflush(stdout);
+	
+	return (time2 - time1) / totalSwitches;
+}
+
+unsigned long long getProcessContextSwitchOverhead(void)
+{
+	long long totalOverhead, condOverhead;
+	totalOverhead = getProcessContextSwitchTime();
+	condOverhead = 0;
+	
+	int numTaken = 1;
+	
+	int res = 10;
+	int step = numTaken/res;
+	int prog = 0;
+	
+	printf("Creating, switching, and ending a process %i times ... ", numTaken);
+	fflush(stdout);
+	for (int i = 0; i < numTaken; i++)
+	{
+		if (i >= prog) {
+			printf("%d%s > ", (i * 100)/numTaken, "%");
+			fflush(stdout);
+			prog += step;
+		}
+		totalOverhead += getProcessContextSwitchTime();
+	}
+	printf("100%s\n", "%");
+	fflush(stdout);
+	
+	totalOverhead = totalOverhead / ((unsigned long long) numTaken);
+	//printf("totalOverhead = %lli\n", totalOverhead);
+	fflush(stdout);
+	condOverhead = getSingleProcessCondOverhead();
+	//printf("condOverhead = %lli\n", condOverhead);
+	fflush(stdout);
+	
+	return totalOverhead - condOverhead;
 }
 
 unsigned long long getSingleProcessCondOverhead(void)
