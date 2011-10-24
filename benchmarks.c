@@ -34,17 +34,7 @@
 /* Variables */
 
 // used to measure context switch oerhead
-int StartedSwitching;
-unsigned long long ContextSwitchCounter;
-unsigned long long TestCounter;
-pthread_mutex_t StartThreads;
-pthread_mutex_t EndThreads;
-pthread_mutex_t PrintLock;
-pthread_cond_t SwitchThreads;
-
-pthread_mutex_t TestStart;
-pthread_mutex_t TestEnd;
-pthread_mutex_t TestSwitch;
+long long numThreadSwitches = 10000000;
 
 
 /*=====================================================================
@@ -258,69 +248,13 @@ void* thread_run(void* llu_ptr)
 
 void* thread_switch(void* idt)
 {
-	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+	unsigned long long localSwitches = numThreadSwitches / 2;
+	unsigned long long switchCount = 0;
 	
-	pthread_mutex_lock(&StartThreads);
-	pthread_mutex_unlock(&StartThreads);
-	
-	//int* id = (int*) idt;
-	
-	pthread_mutex_lock(&EndThreads);
-	
-	if (StartedSwitching)
+	for (; switchCount < localSwitches; switchCount++)
 	{
-		pthread_cond_signal(&SwitchThreads);
+		sched_yield();
 	}
-	while (0 < 1)
-	{
-		StartedSwitching = 1;
-		pthread_cond_wait(&SwitchThreads, &EndThreads);
-		++ContextSwitchCounter;
-		//printf("%i,", *id);
-		//fflush(stdout);
-		pthread_cond_signal(&SwitchThreads);
-	}
-	pthread_mutex_unlock(&EndThreads);
-	
-	return 0;
-}
-
-void* thread_test(void* idt)
-{
-	//pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
-	//pthread_mutex_lock(&TestEnd);
-	pthread_mutex_lock(&TestStart);
-	pthread_mutex_unlock(&TestStart);
-	
-	//int* id = (int*) idt;
-	
-	//pthread_mutex_lock(&TestEnd);
-/*	if (StartedSwitching)
-	{
-		pthread_cond_signal(&TestSwitch);
-	}
-*/
-	//printf("Starting test\n");
-	//fflush(stdout);
-	//pthread_mutex_lock(&TestEnd);
-	//pthread_cond_signal(&TestSwitch);
-	//pthread_mutex_lock(&TestEnd);
-	while (TestCounter < ContextSwitchCounter)
-	{
-		StartedSwitching = 1;
-		//printf("test 1\n");
-	//fflush(stdout);
-		pthread_mutex_lock(&TestSwitch);
-		//printf("test 1\n");
-	//fflush(stdout);
-		++TestCounter;
-		//printf("%i,", *id);
-		//fflush(stdout);
-		pthread_mutex_unlock(&TestSwitch);
-	}
-	//printf("Done with test, TestCounter=%llu\n", TestCounter);
-	//fflush(stdout);
-	//pthread_mutex_unlock(&TestEnd);
 	
 	return 0;
 }
@@ -328,90 +262,24 @@ void* thread_test(void* idt)
 long long getThreadContextSwitchOverhead(void)
 {
 	pthread_t thread1;
-	pthread_t thread2;
-	pthread_t testThread;
-	long long time1, time2, switchTime, loopOverhead;
+	unsigned long long time1, time2;
 	
-	int id1, id2, id3;
-	id1 = 1;
-	id2 = 2;
-	id3 = 3;
-	
-	pthread_mutex_init(&StartThreads, NULL);
-	pthread_mutex_init(&EndThreads, NULL);
-	pthread_cond_init(&SwitchThreads, NULL);
-	
-	pthread_mutex_lock(&StartThreads);
-	
-	ContextSwitchCounter = 0;
-	StartedSwitching = 0;
-	
-	pthread_create(&thread1, NULL, thread_switch, (void*) (&id1));
-	pthread_create(&thread2, NULL, thread_switch, (void*) (&id2));
-	
-	pthread_detach(thread1);
-	pthread_detach(thread2);
-	
-	//pthread_cond_signal(&SwitchThreads);
-	//pthread_mutex_unlock(&EndThreads);
-	
-	//printf("ContextSwitchCounter=%llu\n", ContextSwitchCounter);
-	//fflush(stdout);
-	
-	printf("Context switching for 10 seconds ...\n");
-	fflush(stdout);
+	long long localSwitches = numThreadSwitches / 2;
+	long long switchCount = 0;
 	
 	time1 = rdtsc();
-	pthread_mutex_unlock(&StartThreads);
+	pthread_create(&thread1, NULL, thread_switch, NULL);
 	
-	sleep(10);
+	for (; switchCount < localSwitches; switchCount++)
+	{
+		sched_yield();
+	}
 	
-	pthread_mutex_lock(&EndThreads);
+	pthread_join(thread1, NULL);
 	time2 = rdtsc();
 	
-	pthread_cancel(thread1);
-	pthread_cancel(thread2);
 	
-	//printf("ContextSwitchCounter=%llu\n", ContextSwitchCounter);
-	//fflush(stdout);
-	
-	switchTime = (time2 - time1) / ((long long) ContextSwitchCounter);
-	
-	//printf("switchTime=%lli\n", switchTime);
-	//fflush(stdout);
-	
-	pthread_mutex_init(&TestStart, NULL);
-	pthread_mutex_init(&TestEnd, NULL);
-	pthread_mutex_init(&TestSwitch, NULL);
-	
-	pthread_mutex_lock(&TestStart);
-	
-	StartedSwitching = 0;
-	
-	pthread_create(&testThread, NULL, thread_test, (void*) (&id3));
-	//pthread_detach(testThread);
-	
-	//pthread_mutex_unlock(&TestEnd);
-	pthread_mutex_unlock(&TestSwitch);
-	
-	time1 = rdtsc();
-	//printf("Signalling test ...\n");
-	//fflush(stdout);
-	pthread_mutex_unlock(&TestStart);
-	pthread_join(testThread, NULL);
-	//pthread_mutex_lock(&TestEnd);
-	time2 = rdtsc();
-	
-	loopOverhead = (time2 - time1) / ((long long) ContextSwitchCounter);
-	
-	//printf("time1=%lli\n", time1);
-	//fflush(stdout);
-	//printf("time2=%lli\n", time2);
-	//fflush(stdout);
-	//printf("loopOverhead=%lli, TestCounter=%llu\n", loopOverhead, TestCounter);
-	fflush(stdout);
-	
-	return switchTime - loopOverhead;
+	return (time2 - time1) / numThreadSwitches;
 }
 
 unsigned long long getSingleThreadRunTime(void)
@@ -476,13 +344,13 @@ unsigned long long getSingleProcessRunTime(void)
 	return time2 - time1;
 }
 
-unsigned long long getProcessContextSwitchTime(void)
+unsigned long long getProcessContextSwitchOverhead(void)
 {
 	unsigned long long time1, time2;
 	int childExitStatus;
 	pid_t piD;
 	
-	long long totalSwitches = 100000000;
+	long long totalSwitches = numThreadSwitches;
 	long long switchCount = 0;
 	long long localSwitches = totalSwitches / 2;
 	
@@ -511,42 +379,6 @@ unsigned long long getProcessContextSwitchTime(void)
 	//fflush(stdout);
 	
 	return (time2 - time1) / totalSwitches;
-}
-
-unsigned long long getProcessContextSwitchOverhead(void)
-{
-	long long totalOverhead, condOverhead;
-	totalOverhead = getProcessContextSwitchTime();
-	condOverhead = 0;
-	
-	int numTaken = 1;
-	
-	int res = 10;
-	int step = numTaken/res;
-	int prog = 0;
-	
-	printf("Creating, switching, and ending a process %i times ... ", numTaken);
-	fflush(stdout);
-	for (int i = 0; i < numTaken; i++)
-	{
-		if (i >= prog) {
-			printf("%d%s > ", (i * 100)/numTaken, "%");
-			fflush(stdout);
-			prog += step;
-		}
-		totalOverhead += getProcessContextSwitchTime();
-	}
-	printf("100%s\n", "%");
-	fflush(stdout);
-	
-	totalOverhead = totalOverhead / ((unsigned long long) numTaken);
-	//printf("totalOverhead = %lli\n", totalOverhead);
-	fflush(stdout);
-	condOverhead = getSingleProcessCondOverhead();
-	//printf("condOverhead = %lli\n", condOverhead);
-	fflush(stdout);
-	
-	return totalOverhead - condOverhead;
 }
 
 unsigned long long getSingleProcessCondOverhead(void)
