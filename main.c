@@ -42,6 +42,9 @@ int main(int argc, char *argv[])
 	
 	timeS = getThreadContextSwitchOverhead();
 	printf("Thread context switch overhead is %llu cycles\n", timeS);
+	
+	timeS = getProcessContextSwitchTime();
+	printf("Process context switch overhead is %llu cycles\n", timeS);
 
 	time = getSingleThreadRunOverhead();
 	printf("Thread run overhead is %llu cycles\n", time);

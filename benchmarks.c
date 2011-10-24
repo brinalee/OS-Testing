@@ -476,53 +476,31 @@ unsigned long long getSingleProcessRunTime(void)
 
 unsigned long long getProcessContextSwitchTime(void)
 {
-	//pid_t parentPID = getpid();
-	pid_t childPID1 = -1;
-	pid_t childPID2 = -1;
-	int firstPID, switchPID;
-	unsigned long long time1, time2, totalTime, numSwitches;
-	time1 = 0;
-	time2 = 0;
-	totalTime = 0;
-	numSwitches = 0;
+	unsigned long long time1, time2;
+	int childExitStatus;
+	pid_t piD;
+	int numSwitches = NUM_COLLECTIONS / 2;
+	int switchCount = 0;
 	
-	firstPID = vfork();
-	
-	if (firstPID == 0)
+	time1 = rdtsc();
+	piD = fork();
+	if (piD == 0)
 	{ // child 1's execution domain
-		childPID1 = getpid();
-		
-		switchPID = vfork();
-		time2 = rdtsc();
-		totalTime += time2 - time1;
-		
-		if (switchPID == 0)
-		{ // child 2's execution domain
-			childPID2 = getpid();
-			
-			while (numSwitches < (unsigned long long) NUM_COLLECTIONS)
-			{
-				++numSwitches;
-				time1 = rdtsc();
-				//yield(childPID1);
-				time2 = rdtsc();
-				totalTime += time2 - time1;
-			}
-			exit(1);
-		}
-		
-		while (numSwitches < (unsigned long long) NUM_COLLECTIONS)
+		for (; switchCount < numSwitches; switchCount ++)
 		{
-			++numSwitches;
-			time1 = rdtsc();
-			//yield(childPID2);
-			time2 = rdtsc();
-			totalTime += time2 - time1;
+			sched_yield();
 		}
 		exit(1);
+	} else {
+		for (; switchCount < numSwitches; switchCount ++)
+		{
+			sched_yield();
+		}
+		waitpid(piD, &childExitStatus, 0);
+		time2 = rdtsc();
 	}
 	
-	return totalTime / numSwitches;
+	return (time2 - time1) / ((unsigned long long) NUM_COLLECTIONS);
 }
 
 unsigned long long getSingleProcessCondOverhead(void)
