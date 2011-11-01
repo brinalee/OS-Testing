@@ -11,13 +11,16 @@ OBJECTS = utils.o \
           
 CFLAGS = -Wall -O0 -finline-functions -lpthread
 
-all: main processStartOverhead
+all: main memory
 
 main: main.o $(OBJECTS)
-	$(CC) -o $(INCLUDES) $^ -o $@ -lpthread
+	$(CC) -o $(CFLAGS) $(INCLUDES) $^ -o $@ -lpthread
+
+memory: memory.o $(OBJECTS)
+	$(CC) -o $(CFLAGS) $(INCLUDES) $^ -o $@ -lpthread
 
 processStartOverhead: processStartOverhead.o $(OBJECTS)
-	$(CC) -o $(INCLUDES) $^ -o $@ -lpthread
+	$(CC) -o $(CFLAGS) $(INCLUDES) $^ -o $@ -lpthread
 
 $(OBJECTS): Makefile
 

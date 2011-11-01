@@ -68,4 +68,6 @@ long long getSingleProcessRunOverhead(void);
 
 long long getSystemCallOverhead(void);
 
+long long getMemoryLatency(int power);
+
 #endif

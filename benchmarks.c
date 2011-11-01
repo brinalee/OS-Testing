@@ -18,6 +18,8 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <sched.h>
+#include <math.h>
+#include <limits.h>
 
 /* Local Headers */
 #include "benchmarks.h"
@@ -34,7 +36,8 @@
 /* Variables */
 
 // used to measure context switch oerhead
-long long numThreadSwitches = 10000000;
+const long long numThreadSwitches = 10000000;
+const long long numMemAccesses = 100000000;
 
 
 /*=====================================================================
@@ -468,4 +471,58 @@ long long getSystemCallOverhead(void)
 	time2 = rdtsc();
 	
 	return ((time2 - time1) / (long long) NUM_COLLECTIONS) - loopOverhead;
+}
+
+long long getMemoryLatency(int power)
+{
+	double arrLenDub = pow(2.0, (double) power);
+	int arrLen = (int)arrLenDub;
+	
+	long long time1, time2, loopOverhead;
+	int stride = 457;
+	
+	long long j = 0 + (long long) stride;
+	long long i;
+	long long maxInt = INT_MAX - stride - 1;
+	long long arrLastIdx = (long long) arrLen - 1;
+	
+	int idx1, idx2, ref1, ref2;
+	
+	time1 = rdtsc();
+	for(i = 0; i < numMemAccesses; i++)
+	{
+		j = j % maxInt;
+		idx1 = (int) (i % arrLastIdx);
+		idx2 = (int) (j % arrLastIdx);
+		ref1 = 1;
+		ref2 = 2;
+		j += stride;
+	}
+	time2 = rdtsc();
+	
+	loopOverhead = (time2 - time1) / ((long long) (2*numMemAccesses));
+	
+	int* arr = (int*) malloc(arrLen*sizeof(int));
+	for(i = 0; i < arrLen; i++)
+	{
+		 arr[i] = i;
+	}
+	
+	j = 0 + stride;
+	
+	time1 = rdtsc();
+	for(i = 0; i < numMemAccesses; i++)
+	{
+		j = j % maxInt;
+		idx1 = (int) (i % arrLastIdx);
+		idx2 = (int) (j % arrLastIdx);
+		ref1 = arr[idx1];
+		ref2 = arr[idx2];
+		j += stride;
+	}
+	time2 = rdtsc();
+	
+	free(arr);
+	
+	return ((time2 - time1) / ((long long) (2*numMemAccesses))) - loopOverhead;
 }
