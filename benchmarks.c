@@ -500,7 +500,7 @@ long long getMemoryLatency(int power)
 	}
 	time2 = rdtsc();
 	
-	loopOverhead = (time2 - time1) / ((long long) (2*numMemAccesses));
+	loopOverhead = (time2 - time1) / (2*numMemAccesses);
 	
 	int* arr = (int*) malloc(arrLen*sizeof(int));
 	for(i = 0; i < arrLen; i++)
@@ -524,5 +524,5 @@ long long getMemoryLatency(int power)
 	
 	free(arr);
 	
-	return ((time2 - time1) / ((long long) (2*numMemAccesses))) - loopOverhead;
+	return ((time2 - time1) / (2*numMemAccesses)) - loopOverhead;
 }
