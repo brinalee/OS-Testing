@@ -479,29 +479,29 @@ long long getMemoryLatency(int power)
 	int arrLen = (int)arrLenDub;
 	
 	long long time1, time2, loopOverhead;
-	//int stride = 9743;
-	int stride = 223;
+	int stride = 9743;
+	//int stride = 223;
 	
 	long long j = 0 + (long long) stride;
 	long long i;
 	long long maxInt = INT_MAX - stride - 1;
 	long long arrLastIdx = (long long) arrLen - 1;
 	
-	int idx1, idx2, ref1, ref2;
+	int idx2, ref1, ref2;
 	
 	time1 = rdtsc();
 	for(i = 0; i < numMemAccesses; i++)
 	{
 		j = j % maxInt;
-		idx1 = (int) (i % arrLastIdx);
+		//idx1 = (int) (i % arrLastIdx);
 		idx2 = (int) (j % arrLastIdx);
 		ref1 = 1;
-		ref2 = 2;
+		//ref2 = 2;
 		j += stride;
 	}
 	time2 = rdtsc();
 	
-	loopOverhead = (time2 - time1) / (2*numMemAccesses);
+	loopOverhead = (time2 - time1) / (numMemAccesses);
 	
 	int* arr = (int*) malloc(arrLen*sizeof(int));
 	for(i = 0; i < arrLen; i++)
@@ -515,9 +515,9 @@ long long getMemoryLatency(int power)
 	for(i = 0; i < numMemAccesses; i++)
 	{
 		j = j % maxInt;
-		idx1 = (int) (i % arrLastIdx);
+		//idx1 = (int) (i % arrLastIdx);
 		idx2 = (int) (j % arrLastIdx);
-		ref1 = arr[idx1];
+		//ref1 = arr[idx1];
 		ref2 = arr[idx2];
 		j += stride;
 	}
@@ -525,5 +525,5 @@ long long getMemoryLatency(int power)
 	
 	free(arr);
 	
-	return ((time2 - time1) / (2*numMemAccesses)) - loopOverhead;
+	return ((time2 - time1) / (numMemAccesses)) - loopOverhead;
 }
