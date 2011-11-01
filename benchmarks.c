@@ -479,7 +479,7 @@ long long getMemoryLatency(int power)
 	int arrLen = (int)arrLenDub;
 	
 	long long time1, time2, loopOverhead;
-	int stride = 457;
+	int stride = 997;
 	
 	long long j = 0 + (long long) stride;
 	long long i;
