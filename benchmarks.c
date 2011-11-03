@@ -645,7 +645,7 @@ long long getPageFaultOverhead(void)
 	long long ref1;
 	long long time1, time2, locOverhead, totalOverhead, numPageFaults;
 	
-	long long numPageAccesses = 10000000;
+	long long numPageAccesses = 15000000;
 	long long minPageOv = 2000000;
 	
 	long long stride = 1041553;
@@ -680,7 +680,7 @@ long long getPageFaultOverhead(void)
 		j += stride;
 	}
 	
-	printf("\nDone writing\n");
+	printf("\nDone writing, now reading\n");
 	fflush(stdout);
 	
 	ref1 = 0;
@@ -700,7 +700,6 @@ long long getPageFaultOverhead(void)
 		idx1 = (int) (j % arrLastIdx);
 		
 		time1 = rdtsc();
-		arr[idx1] = idx1;
 		ref1 += arr[idx1];
 		time2 = rdtsc();
 		
@@ -716,6 +715,9 @@ long long getPageFaultOverhead(void)
 			//++numPageFaults;
 		}
 	}
+	
+	printf("\nDone reading\n");
+	fflush(stdout);
 	
 	fflush(stderr);
 	
