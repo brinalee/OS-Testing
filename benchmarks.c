@@ -645,7 +645,7 @@ long long getPageFaultOverhead(void)
 	long long time1, time2, locOverhead, totalOverhead, numPageFaults;
 	
 	long long numPageAccesses = 2000000;
-	long long minPageOv = 1000000;
+	long long minPageOv = 100000;
 	
 	int stride = 9973;
 	//int stride = 223;
@@ -676,14 +676,14 @@ long long getPageFaultOverhead(void)
 		
 		if (locOverhead > minPageOv)
 		{
-			printf("Page fault at iteration %lli (%lli cycles)\n", i,  locOverhead);
+			printf("%lli\n", locOverhead);
 			fflush(stdout);
 			totalOverhead += locOverhead;
 			++numPageFaults;
 		}
 	}
 	
-	printf("numPageFaults=%lli\n", numPageFaults);
+	//printf("numPageFaults=%lli\n", numPageFaults);
 	
 	return totalOverhead / numPageFaults;
 }

@@ -15,10 +15,10 @@ int main(int argc, char *argv[])
 {
 	long long timeS;
 	
-	printf("Page fault overhead = ");
+	//printf("Page fault overhead = ");
 	fflush(stdout);
 	timeS = getPageFaultOverhead();
-	printf("%lli cycles\n\n", timeS);
+	//printf("%lli cycles\n\n", timeS);
 	
 	exit(1);
 }
