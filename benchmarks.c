@@ -641,7 +641,7 @@ long long getPageFaultOverhead(void)
 	
 	double arrLenDub = pow(2.0, 30.0);
 	int arrLen = (int)arrLenDub;
-	int ref1, idx1;
+	int idx1;
 	long long time1, time2, locOverhead, totalOverhead, numPageFaults;
 	
 	long long numPageAccesses = 100000000;
@@ -666,7 +666,7 @@ long long getPageFaultOverhead(void)
 		idx1 = (int) (j % arrLastIdx);
 		
 		time1 = rdtsc();
-		ref1 = arr[idx1];
+		arr[idx1] = idx1;
 		time2 = rdtsc();
 		
 		locOverhead = time2 - time1 - measureOv;
