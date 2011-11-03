@@ -530,11 +530,11 @@ long long getMemoryLatency(int power)
 
 long double getMemoryWriteBandwith(void)
 {
-	double arrLenDub = pow(2.0, 18.0);
+	double arrLenDub = pow(2.0, 17.0);
 	int arrLen = (int)arrLenDub;
 	
 	long long j, ref1, time1, time2, loopOverhead, overhead, dataSize;
-	long long numRepeats = 10000;
+	long long numRepeats = 20;
 	
 	int i;
 	
@@ -581,11 +581,11 @@ long double getMemoryWriteBandwith(void)
 
 long double getMemoryReadBandwith(void)
 {
-	double arrLenDub = pow(2.0, 18.0);
+	double arrLenDub = pow(2.0, 27.0);
 	int arrLen = (int)arrLenDub;
 	
 	long long j, ref1, time1, time2, loopOverhead, overhead, dataSize;
-	long long numRepeats = 10000;
+	long long numRepeats = 20;
 	
 	int i;
 	
@@ -596,6 +596,7 @@ long double getMemoryReadBandwith(void)
 	for (j = 0; j < numRepeats; j++)
 	{
 		//printf("j=%lli,", j);
+		//fflush(stdout);
 		for(i = 0; i < arrLen; i++)
 		{
 			ref1 = j;
@@ -617,6 +618,8 @@ long double getMemoryReadBandwith(void)
 	time1 = rdtsc();
 	for (j = 0; j < numRepeats; j++)
 	{
+		//printf("j=%lli,", j);
+		//fflush(stdout);
 		for(i = 0; i < arrLen; i++)
 		{
 			ref1 = arr[i];
