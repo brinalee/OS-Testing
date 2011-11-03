@@ -529,10 +529,12 @@ long long getMemoryLatency(int power)
 		rep = 0;
 	}
 	
+	arr[idx2] = 0;
+	
 	idx2 = 0;
 	
 	time1 = rdtsc();
-	for(i = 0; idx2 >= 0; i++)
+	for(i = 0; i < numMemAccesses; i++)
 	{
 		idx2 = arr[idx2];
 	}
