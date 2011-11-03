@@ -641,16 +641,17 @@ long long getPageFaultOverhead(void)
 	
 	double arrLenDub = pow(2.0, 30.0);
 	int arrLen = (int)arrLenDub;
-	int idx1, ref1;
+	int idx1;
+	long long ref1;
 	long long time1, time2, locOverhead, totalOverhead, numPageFaults;
 	
 	long long numPageAccesses = 10000000;
 	long long minPageOv = 2000000;
 	
-	int stride = 9973;
+	long long stride = 1041553;
 	//int stride = 223;
 	
-	long long j = 0 + (long long) stride;
+	long long j = 0 + stride;
 	long long i;
 	long long maxInt = INT_MAX - stride - 1;
 	long long arrLastIdx = (long long) arrLen - 1;
@@ -659,6 +660,31 @@ long long getPageFaultOverhead(void)
 	numPageFaults = 0;
 	long long* arr = (long long*) malloc(arrLen*sizeof(long long));
 	
+	long long numChecks = 100;
+	long long step = numPageAccesses / numChecks;
+	long long cur = step;
+	for (i = 0; i < numPageAccesses; i++)
+	{
+		if (i >= cur)
+		{
+			printf("%lli,", cur/step);
+			fflush(stdout);
+			cur += step;
+		}
+		j = j % maxInt;
+		//idx1 = (int) (i % arrLastIdx);
+		idx1 = (int) (j % arrLastIdx);
+		
+		arr[idx1] = (long long) idx1;
+		
+		j += stride;
+	}
+	
+	printf("Done writing\n");
+	fflush(stdout);
+	
+	ref1 = 0;
+	j = 0 + stride;
 	for (i = 0; i < numPageAccesses; i++)
 	{
 		j = j % maxInt;
@@ -667,7 +693,7 @@ long long getPageFaultOverhead(void)
 		
 		time1 = rdtsc();
 		arr[idx1] = idx1;
-		ref1 = arr[idx1];
+		ref1 += arr[idx1];
 		time2 = rdtsc();
 		
 		j += stride;
@@ -676,14 +702,16 @@ long long getPageFaultOverhead(void)
 		
 		if (locOverhead > minPageOv)
 		{
-			printf("%lli\n", locOverhead);
-			fflush(stdout);
-			totalOverhead += locOverhead;
-			++numPageFaults;
+			//printf("%lli\n", locOverhead);
+			//fflush(stdout);
+			//totalOverhead += locOverhead;
+			//++numPageFaults;
 		}
 	}
 	
+	free(arr);
+	
 	//printf("numPageFaults=%lli\n", numPageFaults);
 	
-	return totalOverhead / numPageFaults;
+	return 0;
 }
