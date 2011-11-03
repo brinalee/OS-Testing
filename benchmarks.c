@@ -683,6 +683,8 @@ long long getPageFaultOverhead(void)
 	printf("\nDone writing, now reading\n");
 	fflush(stdout);
 	
+	numPageAccesses = numPageAccesses / 10;
+	
 	ref1 = 0;
 	j = 0 + stride;
 	cur = step;
