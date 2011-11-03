@@ -70,4 +70,5 @@ long long getSystemCallOverhead(void);
 
 long long getMemoryLatency(int power);
 
+long double getMemoryWriteBandwith(void);
 #endif

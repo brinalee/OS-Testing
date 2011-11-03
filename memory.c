@@ -14,6 +14,12 @@
 int main(int argc, char *argv[])
 {
 	long long timeS;
+	long double timeD;
+	
+	printf("Memory write bandwith = ");
+	fflush(stdout);
+	timeD = getMemoryWriteBandwith();
+	printf("%LF bytes/cycle\n\n", timeD);
 	
 	printf("<log2(array size)>\t<latency in cycles>\n");
 	for (int i = 6; i <= 28; i++)
