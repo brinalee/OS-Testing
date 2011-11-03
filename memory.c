@@ -19,12 +19,14 @@ int main(int argc, char *argv[])
 	printf("Memory read bandwith = ");
 	fflush(stdout);
 	timeD = getMemoryReadBandwith();
-	printf("%LF bytes/cycle\n\n", timeD);
+	timeD = timeD * (2.4e9/1.0e9);
+	printf("%LF GB/sec\n\n", timeD);
 	
 	printf("Memory write bandwith = ");
 	fflush(stdout);
 	timeD = getMemoryWriteBandwith();
-	printf("%LF bytes/cycle\n\n", timeD);
+	timeD = timeD * (2.4e9/1.0e9);
+	printf("%LF GB/sec\n\n", timeD);
 	
 	printf("<log2(array size)>\t<latency in cycles>\n");
 	for (int i = 6; i <= 28; i++)
