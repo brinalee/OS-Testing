@@ -669,6 +669,8 @@ long long getPageFaultOverhead(void)
 		arr[idx1] = idx1;
 		time2 = rdtsc();
 		
+		j += stride;
+		
 		locOverhead = time2 - time1 - measureOv;
 		
 		if (locOverhead > minPageOv)
