@@ -639,7 +639,7 @@ long long getPageFaultOverhead(void)
 {
 	long long measureOv = (long long)getMeasureOverhead();
 	
-	double arrLenDub = pow(2.0, 31.0);
+	double arrLenDub = pow(2.0, 30.0);
 	int arrLen = (int)arrLenDub;
 	int idx1, ref1;
 	long long time1, time2, locOverhead, totalOverhead, numPageFaults;
@@ -657,7 +657,7 @@ long long getPageFaultOverhead(void)
 	
 	totalOverhead = 0;
 	numPageFaults = 0;
-	int* arr = (int*) malloc(arrLen*sizeof(int));
+	long long* arr = (long long*) malloc(arrLen*sizeof(long long));
 	
 	for (i = 0; i < numPageAccesses; i++)
 	{
