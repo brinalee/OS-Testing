@@ -11,12 +11,15 @@ OBJECTS = utils.o \
           
 CFLAGS = -Wall -O0 -finline-functions -lpthread
 
-all: main memory
+all: main memory pageFault
 
 main: main.o $(OBJECTS)
 	$(CC) -o $(CFLAGS) $(INCLUDES) $^ -o $@ -lpthread
 
 memory: memory.o $(OBJECTS)
+	$(CC) -o $(CFLAGS) $(INCLUDES) $^ -o $@ -lpthread
+
+pageFault: pageFault.o $(OBJECTS)
 	$(CC) -o $(CFLAGS) $(INCLUDES) $^ -o $@ -lpthread
 
 processStartOverhead: processStartOverhead.o $(OBJECTS)
@@ -28,4 +31,4 @@ $(OBJECTS): Makefile
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o $@ $< 
 
 clean:
-	rm *.o main processStartOverhead
+	rm *.o main memory pageFault

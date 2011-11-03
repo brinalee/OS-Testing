@@ -634,3 +634,49 @@ long double getMemoryReadBandwith(void)
 	
 	return ((long double)dataSize) / ((long double) overhead);
 }
+
+long long getPageFaultOverhead(void)
+{
+	long long measureOv = (long long)getMeasureOverhead();
+	
+	double arrLenDub = pow(2.0, 30.0);
+	int arrLen = (int)arrLenDub;
+	int ref1, idx1;
+	long long time1, time2, locOverhead, totalOverhead, numPageFaults;
+	
+	long long numPageAccesses = 1000000;
+	long long minPageOv = 2000;
+	
+	int stride = 9973;
+	//int stride = 223;
+	
+	long long j = 0 + (long long) stride;
+	long long i;
+	long long maxInt = INT_MAX - stride - 1;
+	long long arrLastIdx = (long long) arrLen - 1;
+	
+	totalOverhead = 0;
+	numPageFaults = 0;
+	int* arr = (int*) malloc(arrLen*sizeof(int));
+	
+	for (i = 0; i < numPageAccesses; i++)
+	{
+		j = j % maxInt;
+		//idx1 = (int) (i % arrLastIdx);
+		idx1 = (int) (j % arrLastIdx);
+		
+		time1 = rdtsc();
+		ref1 = arr[idx1];
+		time2 = rdtsc();
+		
+		locOverhead = time2 - time1 - measureOv;
+		
+		if (locOverhead > minPageOv)
+		{
+			totalOverhead += locOverhead;
+			++numPageFaults;
+		}
+	}
+	
+	return totalOverhead / numPageFaults;
+}
