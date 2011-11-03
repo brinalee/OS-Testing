@@ -574,7 +574,7 @@ long double getMemoryWriteBandwith(void)
 	free(arr);
 	
 	overhead = (time2 - time1) - loopOverhead;
-	dataSize = ((long long) (arrLen*sizeof(long long))) * numMemAccesses;
+	dataSize = ((long long) (arrLen*sizeof(long long))) * numRepeats;
 	
 	return ((long double)dataSize) / ((long double) overhead);
 }
@@ -630,7 +630,7 @@ long double getMemoryReadBandwith(void)
 	free(arr);
 	
 	overhead = (time2 - time1) - loopOverhead;
-	dataSize = ((long long) (arrLen*sizeof(long long))) * numMemAccesses;
+	dataSize = ((long long) (arrLen*sizeof(long long))) * numRepeats;
 	
 	return ((long double)dataSize) / ((long double) overhead);
 }
