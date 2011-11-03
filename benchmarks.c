@@ -644,8 +644,8 @@ long long getPageFaultOverhead(void)
 	int idx1;
 	long long time1, time2, locOverhead, totalOverhead, numPageFaults;
 	
-	long long numPageAccesses = 1000000;
-	long long minPageOv = 20000;
+	long long numPageAccesses = 10000000;
+	long long minPageOv = 200000000;
 	
 	int stride = 9973;
 	//int stride = 223;
