@@ -559,7 +559,7 @@ long double getMemoryWriteBandwith(void)
 	
 	loopOverhead = time2 - time1;
 	
-	int* arr = (int*) malloc(arrLen*sizeof(long long));
+	long long* arr = (long long*) malloc(arrLen*sizeof(long long));
 	
 	time1 = rdtsc();
 	for (j = 0; j < numRepeats; j++)
@@ -608,7 +608,7 @@ long double getMemoryReadBandwith(void)
 	
 	loopOverhead = time2 - time1;
 	
-	int* arr = (int*) malloc(arrLen*sizeof(long long));
+	long long* arr = (long long*) malloc(arrLen*sizeof(long long));
 	for(i = 0; i < arrLen; i++)
 	{
 		arr[i] = numRepeats;
