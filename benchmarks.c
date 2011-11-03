@@ -576,3 +576,56 @@ long double getMemoryWriteBandwith(void)
 	
 	return ((long double)dataSize) / ((long double) overhead);
 }
+
+long double getMemoryReadBandwith(void)
+{
+	double arrLenDub = pow(2.0, 18.0);
+	int arrLen = (int)arrLenDub;
+	
+	long long j, time1, time2, loopOverhead, overhead, dataSize;
+	long long numRepeats = 10000;
+	
+	int i, ref1;
+	
+	//printf("arrLen = %d\n", arrLen);
+	//fflush(stdout);
+	
+	time1 = rdtsc();
+	for (j = 0; j < numRepeats; j++)
+	{
+		//printf("j=%lli,", j);
+		for(i = 0; i < arrLen; i++)
+		{
+			ref1 = i;
+		}
+	}
+	time2 = rdtsc();
+	
+	//printf("here2\n");
+	//fflush(stdout);
+	
+	loopOverhead = time2 - time1;
+	
+	int* arr = (int*) malloc(arrLen*sizeof(int));
+	for(i = 0; i < arrLen; i++)
+	{
+		arr[i] = i;
+	}
+	
+	time1 = rdtsc();
+	for (j = 0; j < numRepeats; j++)
+	{
+		for(i = 0; i < arrLen; i++)
+		{
+			ref1 = arr[i];
+		}
+	}
+	time2 = rdtsc();
+	
+	free(arr);
+	
+	overhead = (time2 - time1) - loopOverhead;
+	dataSize = ((long long) (arrLen*sizeof(int))) * numMemAccesses;
+	
+	return ((long double)dataSize) / ((long double) overhead);
+}

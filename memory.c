@@ -16,6 +16,11 @@ int main(int argc, char *argv[])
 	long long timeS;
 	long double timeD;
 	
+	printf("Memory read bandwith = ");
+	fflush(stdout);
+	timeD = getMemoryReadBandwith();
+	printf("%LF bytes/cycle\n\n", timeD);
+	
 	printf("Memory write bandwith = ");
 	fflush(stdout);
 	timeD = getMemoryWriteBandwith();
