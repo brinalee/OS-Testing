@@ -680,13 +680,21 @@ long long getPageFaultOverhead(void)
 		j += stride;
 	}
 	
-	printf("Done writing\n");
+	printf("\nDone writing\n");
 	fflush(stdout);
 	
 	ref1 = 0;
 	j = 0 + stride;
+	cur = step;
 	for (i = 0; i < numPageAccesses; i++)
 	{
+		if (i >= cur)
+		{
+			printf("%lli,", cur/step);
+			fflush(stdout);
+			cur += step;
+		}
+		
 		j = j % maxInt;
 		//idx1 = (int) (i % arrLastIdx);
 		idx1 = (int) (j % arrLastIdx);
@@ -702,12 +710,14 @@ long long getPageFaultOverhead(void)
 		
 		if (locOverhead > minPageOv)
 		{
-			//printf("%lli\n", locOverhead);
+			fprintf(stderr, "%lli\n", locOverhead);
 			//fflush(stdout);
 			//totalOverhead += locOverhead;
 			//++numPageFaults;
 		}
 	}
+	
+	fflush(stderr);
 	
 	free(arr);
 	
