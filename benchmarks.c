@@ -481,7 +481,7 @@ long long getMemoryLatency(int power)
 	long long time1, time2, loopOverhead;
 	
 	int randMax = RAND_MAX;
-	int maxRep = 10;
+	int maxRep = 50;
 	double frac;
 	
 	int idx1, idx2, i, rep;
