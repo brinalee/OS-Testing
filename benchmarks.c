@@ -481,9 +481,10 @@ long long getMemoryLatency(int power)
 	long long time1, time2, loopOverhead;
 	
 	int randMax = RAND_MAX;
+	int maxRep = 10;
 	double frac;
 	
-	int idx2, i;
+	int idx1, idx2, i, rep;
 	
 	time1 = rdtsc();
 	for(i = 0; i < numMemAccesses; i++)
@@ -497,14 +498,41 @@ long long getMemoryLatency(int power)
 	int* arr = (int*) malloc(arrLen*sizeof(int));
 	for(i = 0; i < arrLen; i++)
 	{
+		arr[i] = -1;
+	}
+	
+	idx2 = 0;
+	idx1 = 0;
+	rep = 0;
+	for(i = 0; i < arrLen; i++)
+	{
 		frac = (double) rand() / (double) randMax;
-		arr[i] = (int) (frac * ((double) arrLen - 1));
+		idx2 = (int) (frac * ((double) arrLen - 1));
+		while (rep < maxRep)
+		{
+			if (arr[idx2] < 0)
+			{
+				arr[idx1] = idx2;
+				idx1 = idx2;
+				break;
+			} else
+			{
+				rep ++;
+				frac = (double) rand() / (double) randMax;
+				idx2 = (int) (frac * ((double) arrLen - 1));
+			}
+		}
+		if (rep >= maxRep)
+		{
+			break;
+		}
+		rep = 0;
 	}
 	
 	idx2 = 0;
 	
 	time1 = rdtsc();
-	for(i = 0; i < numMemAccesses; i++)
+	for(i = 0; idx2 >= 0; i++)
 	{
 		idx2 = arr[idx2];
 	}
@@ -512,7 +540,7 @@ long long getMemoryLatency(int power)
 	
 	free(arr);
 	
-	return ((time2 - time1) / (numMemAccesses)) - loopOverhead;
+	return ((time2 - time1) / (i)) - loopOverhead;
 }
 
 long double getMemoryWriteBandwith(void)
