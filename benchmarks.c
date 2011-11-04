@@ -485,11 +485,12 @@ long long getMemoryLatency(int power)
 	double frac;
 	
 	int idx1, idx2, i, rep;
+	idx2 = 0;
 	
 	time1 = rdtsc();
 	for(i = 0; i < numMemAccesses; i++)
 	{
-		idx2 = 0;
+		idx2 = idx2+1;
 	}
 	time2 = rdtsc();
 	
