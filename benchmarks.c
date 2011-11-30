@@ -38,6 +38,9 @@
 // used to measure context switch oerhead
 const long long numThreadSwitches = 10000000;
 const long long numMemAccesses = 100000000;
+const long long numFileAccesses = 10000000;
+
+const char* TestFileName = "test.dat";
 
 
 /*=====================================================================
@@ -746,4 +749,80 @@ long long getPageFaultOverhead(void)
 	//printf("numPageFaults=%lli\n", numPageFaults);
 	
 	return 0;
+}
+
+long long getCachedIOLatency(int power, long stride)
+{
+	double arrLenDub = floor(pow(2.0, (double) power) / ((double) sizeof(long)));
+	long arrLen = (long) (arrLenDub + 0.1);
+	
+	long long time1, time2, loopOverhead;
+	
+	long idx1, idx2, i;
+	idx2 = 0;
+	
+	long offset = 0;
+	time1 = rdtsc();
+	for(i = 0; i < numFileAccesses; i++)
+	{
+		offset += 1;
+	}
+	time2 = rdtsc();
+	
+	loopOverhead = (time2 - time1) / (numFileAccesses);
+	
+	//printf("size of long=%d, arr size=%li\n", (int)sizeof(long), arrLen);
+	//fflush(stdout);
+	
+	long* arr = (long*) malloc(arrLen*sizeof(long));
+	for(i = 0; i < arrLen; i++)
+	{
+		arr[i] = -1;
+	}
+	
+	idx2 = 0;
+	idx1 = 0;
+	int numFill = (int) (0.95 * (double) arrLen);
+	for(i = 0; i < numFill; i++)
+	{
+		idx2 = (idx1 + stride) % (arrLen-1);
+		
+		while (arr[idx2] >= 0) {
+			idx2 = (idx2 >= arrLen) ? 1 : idx2 + 1;
+		}
+		//printf("idx1=%li, idx2=%li\n", idx1, idx2);
+		//fflush(stdout);
+		
+		arr[idx1] = (idx2) * sizeof(long);
+		idx1 = idx2;
+	}
+	
+	arr[idx2] = 0;
+	
+	//printf("done preloading, now writing\n");
+	//fflush(stdout);
+	
+	
+	FILE *fp = fopen(TestFileName, "w");
+	fwrite(arr, sizeof(long), arrLen, fp);
+	fflush(fp); // flush buffered data to disk
+	fclose(fp);
+	
+	//printf("done writing\n");
+	//fflush(stdout);
+	
+	offset = 0;
+	fp = fopen(TestFileName, "r");
+	time1 = rdtsc();
+	for(i = 0; i < numFileAccesses; i++)
+	{
+		//printf("offset=%li\n", offset);
+		//fflush(stdout);
+		fseek(fp, offset, SEEK_SET);
+		fread(&offset, sizeof(long), 1, fp);
+	}
+	time2 = rdtsc();
+	fclose(fp);
+	
+	return ((time2 - time1) / numFileAccesses) - loopOverhead;
 }

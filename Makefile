@@ -1,6 +1,6 @@
 # PROGNAME = os_meas
 CC = g++
-#LIBS = -pthread 
+#LIBS = -pthread  
 LIBS = 
 INCLUDES = -I.
 #LDFLAGS = -Llibs/
@@ -11,12 +11,15 @@ OBJECTS = utils.o \
           
 CFLAGS = -Wall -O0 -finline-functions -lpthread
 
-all: main memory pageFault
+all: main memory pageFault filesys
 
 main: main.o $(OBJECTS)
 	$(CC) -o $(CFLAGS) $(INCLUDES) $^ -o $@ -lpthread
 
 memory: memory.o $(OBJECTS)
+	$(CC) -o $(CFLAGS) $(INCLUDES) $^ -o $@ -lpthread
+
+filesys: filesys.o $(OBJECTS)
 	$(CC) -o $(CFLAGS) $(INCLUDES) $^ -o $@ -lpthread
 
 pageFault: pageFault.o $(OBJECTS)
@@ -31,4 +34,4 @@ $(OBJECTS): Makefile
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o $@ $< 
 
 clean:
-	rm *.o main memory pageFault
+	rm *.o main memory pageFault filesys
