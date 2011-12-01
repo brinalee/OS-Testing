@@ -38,7 +38,7 @@
 // used to measure context switch oerhead
 const long long numThreadSwitches = 10000000;
 const long long numMemAccesses = 100000000;
-const long long numFileAccesses = 1000000;
+const long long numFileAccesses = 100000;
 
 const char* TestFileName = "test.dat";
 
