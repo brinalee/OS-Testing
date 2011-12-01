@@ -807,6 +807,7 @@ long long getCachedIOLatency(int power, long stride)
 	fwrite(arr, sizeof(long), arrLen, fp);
 	fflush(fp); // flush buffered data to disk
 	fclose(fp);
+	free(arr);
 	
 	//printf("done writing\n");
 	//fflush(stdout);
