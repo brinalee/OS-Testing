@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 	//long double timeD;
 	
 	printf("<log2(byte file size)>\t<8 MB stride latency>\t<4 MB stride latency>\t<1 MB stride latency>\t<24 KB stride latency>\t<12 KB stride latency>\n");
-	for (int i = 8; i <= 28; i++)
+	for (int i = 8; i <= 32; i++)
 	{
 		// 1000003, 510073, 125029, 4003, 2003
 		printf("%d\t", i);
