@@ -751,9 +751,9 @@ long long getPageFaultOverhead(void)
 	return 0;
 }
 
-long long getCachedIOLatency(int power, long stride)
+long long getCachedIOLatency(long fileSize, long stride)
 {
-	double arrLenDub = floor(pow(2.0, (double) power) / ((double) sizeof(long)));
+	double arrLenDub = floor(((double) fileSize) / ((double) sizeof(long)));
 	long arrLen = (long) (arrLenDub + 0.1);
 	
 	long long time1, time2, loopOverhead;
@@ -782,7 +782,7 @@ long long getCachedIOLatency(int power, long stride)
 	
 	idx2 = 0;
 	idx1 = 0;
-	int numFill = (int) (0.95 * (double) arrLen);
+	long numFill = (long) (0.95 * (double) arrLen);
 	for(i = 0; i < numFill; i++)
 	{
 		idx2 = (idx1 + stride) % (arrLen-1);

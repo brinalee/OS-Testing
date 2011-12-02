@@ -15,31 +15,32 @@ int main(int argc, char *argv[])
 {
 	long long timeS;
 	//long double timeD;
+	long mb = 1000000;
 	
-	printf("<log2(byte file size)>\t<8 MB stride latency>\t<4 MB stride latency>\t<1 MB stride latency>\t<24 KB stride latency>\t<12 KB stride latency>\n");
-	for (int i = 8; i <= 32; i++)
+	printf("<MB file size>\t<8 MB stride latency>\t<4 MB stride latency>\t<1 MB stride latency>\t<24 KB stride latency>\t<12 KB stride latency>\n");
+	for (long i = 1000; i <= 2100; i += 100)
 	{
 		// 1000003, 510073, 125029, 4003, 2003
-		printf("%d\t", i);
+		printf("%li\t", i);
 		fflush(stdout);
 		
-		timeS = getCachedIOLatency(i, 1000003);
+		timeS = getCachedIOLatency(i * mb,  1000003);
 		printf("%lli\t", timeS);
 		fflush(stdout);
 		
-		timeS = getCachedIOLatency(i, 510073);
+		timeS = getCachedIOLatency(i * mb, 510073);
 		printf("%lli\t", timeS);
 		fflush(stdout);
 		
-		timeS = getCachedIOLatency(i, 125029);
+		timeS = getCachedIOLatency(i * mb, 125029);
 		printf("%lli\t", timeS);
 		fflush(stdout);
 		
-		timeS = getCachedIOLatency(i, 4003);
+		timeS = getCachedIOLatency(i * mb, 4003);
 		printf("%lli\t", timeS);
 		fflush(stdout);
 		
-		timeS = getCachedIOLatency(i, 2003);
+		timeS = getCachedIOLatency(i * mb, 2003);
 		printf("%lli\n", timeS);
 		fflush(stdout);
 	}
