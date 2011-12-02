@@ -783,6 +783,9 @@ long long getCachedIOLatency(long fileSize, long stride)
 	idx2 = 0;
 	idx1 = 0;
 	long numFill = (long) (0.95 * (double) arrLen);
+	if (numFileAccesses < numFill) {
+		numFill = numFileAccesses + 1;
+	}
 	for(i = 0; i < numFill; i++)
 	{
 		idx2 = (idx1 + stride) % (arrLen-1);
