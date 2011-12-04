@@ -20,6 +20,7 @@
 #include <sched.h>
 #include <math.h>
 #include <limits.h>
+#include <fcntl.h>
 
 /* Local Headers */
 #include "benchmarks.h"
