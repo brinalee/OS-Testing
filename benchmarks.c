@@ -984,7 +984,7 @@ double getRandomFileReadTime(int power)
 
 	int fId = open(TestFileName, O_WRONLY | O_DIRECT);
 	for (i = 0; i < numBlocks; i++) {
-		arr[0] = (arrRef[i] < 0) ? 0 : arrRef[i] * intsPerBlock * FileBlockSize;
+		arr[0] = (arrRef[i] < 0) ? 0 : arrRef[i] * FileBlockSize;
 		write(fId, arr, FileBlockSize);
 	}
 	close(fId);
