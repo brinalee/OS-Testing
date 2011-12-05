@@ -79,4 +79,6 @@ long long getPageFaultOverhead(void);
 long long getCachedIOLatency(long fileSize, long stride);
 
 double getSequentialFileReadTime(int power);
+
+double getRandomFileReadTime(int power);
 #endif

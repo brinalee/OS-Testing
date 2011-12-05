@@ -852,8 +852,116 @@ double getSequentialFileReadTime(int power)
 		arrLen = (arrLen / intsPerBlock) * intsPerBlock;
 	}
 	long numBlocks = arrLen / intsPerBlock;
-	long i, j;
+	long i;
+	long long time1, time2;
+
+	long* arr;// = (long*) malloc(FileBlockSize);
+	int pageSize = getpagesize();
+	posix_memalign((void**) &arr, pageSize, FileBlockSize);
+
+	for (i = 0; i < intsPerBlock; i++) {
+		arr[i] = 1;
+	}
+
+	//printf("loopOverhead=%lli\n", loopOverhead);
+	//fflush(stdout);
+
+	int fId = open(TestFileName, O_WRONLY | O_DIRECT);
+	for (i = 0; i < numBlocks; i++) {
+		arr[0] = (i+1) * FileBlockSize;
+		if (i == numBlocks - 1) {
+			arr[0] = 0;
+		}
+		write(fId, arr, FileBlockSize);
+	}
+	close(fId);
+	//printf("now reading\n");
+	//fflush(stdout);
+
+	free(arr);
+	long* allData;
+	posix_memalign((void**) &allData, pageSize, FileBlockSize*numBlocks);
+	time1 = rdtsc();
+	memset(allData, 0, FileBlockSize*numBlocks);
+	time2 = rdtsc();
+	long long loopOverhead = (time2 - time1) / (numBlocks);
+	
+	fId = open(TestFileName, O_RDONLY | O_DIRECT);
+	arr[0] = 0;
+	time1 = rdtsc();
+	read(fId, allData, FileBlockSize*numBlocks);
+/*	for(i = 0; i < numDirectFileAccesses; i++)
+	{
+		lseek(fId, arr[0], SEEK_SET);
+		read(fId, arr, FileBlockSize);
+	}
+*/
+	time2 = rdtsc();
+	//printf("access time = %lli\n", (time2-time1) / numDirectFileAccesses);
+	close(fId);
+	free(allData);
+	
+
+	long long totalTime = ((time2 - time1) / numBlocks) - loopOverhead;
+	//printf("totalTime=%lli\n", totalTime);
+	//fflush(stdout);
+	long double totalTimeDouble = (long double) totalTime;
+	return (double) (log(totalTimeDouble) / log((long double) 2.0));
+}
+
+double getRandomFileReadTime(int power)
+{
+	double arrLenDub = pow(2.0, (double) power) / ((double) sizeof(long));
+	long arrLen = (long)arrLenDub;
+
+	long intsPerBlock = ((long) FileBlockSize) / ((long) sizeof(long));
+	if (arrLen < intsPerBlock) {
+		arrLen = intsPerBlock;
+	} else {
+		arrLen = (arrLen / intsPerBlock) * intsPerBlock;
+	}
+	long numBlocks = arrLen / intsPerBlock;
+	long i, j, idx1, idx2;
 	long long time1, time2, loopOverhead;
+
+	int randMax = RAND_MAX;
+	int maxRep = 50;
+	double frac;
+	long* arrRef = (long*) malloc(numBlocks*sizeof(long));
+	for(i = 0; i < numBlocks; i++)
+	{
+		arrRef[i] = -1;
+	}
+	
+	idx2 = 0;
+	idx1 = 0;
+	int rep = 0;
+	for(i = 0; i < numBlocks; i++)
+	{
+		frac = (double) rand() / (double) randMax;
+		idx2 = (long) (frac * ((double) numBlocks - 1));
+		while (rep < maxRep)
+		{
+			if (arrRef[idx2] < 0 && idx2 != idx1)
+			{
+				arrRef[idx1] = idx2;
+				idx1 = idx2;
+				break;
+			} else
+			{
+				rep ++;
+				frac = (double) rand() / (double) randMax;
+				idx2 = (long) (frac * ((double) numBlocks - 1));
+			}
+		}
+		if (rep >= maxRep)
+		{
+			break;
+		}
+		rep = 0;
+	}
+	
+	arrRef[idx2] = 0;
 
 	long* arr;// = (long*) malloc(FileBlockSize);
 	int pageSize = getpagesize();
@@ -876,13 +984,11 @@ double getSequentialFileReadTime(int power)
 
 	int fId = open(TestFileName, O_WRONLY | O_DIRECT);
 	for (i = 0; i < numBlocks; i++) {
-		arr[0] = (i+1) * FileBlockSize;
-		if (i == numBlocks - 1) {
-			arr[0] = 0;
-		}
+		arr[0] = (arrRef[i] < 0) ? 0 : arrRef[i] * intsPerBlock * FileBlockSize;
 		write(fId, arr, FileBlockSize);
 	}
 	close(fId);
+	free(arrRef);
 	//printf("now reading\n");
 	//fflush(stdout);
 
