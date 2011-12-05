@@ -10,6 +10,7 @@
 
 /* Standard Libraries */
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
@@ -20,6 +21,7 @@
 #include <sched.h>
 #include <math.h>
 #include <limits.h>
+
 #include <fcntl.h>
 
 /* Local Headers */
@@ -32,6 +34,8 @@
 
 /* Typedefs and Enums */
 
+//#define _GNU_SOURCE
+
 /* Constants and Macros */
 
 /* Variables */
@@ -40,6 +44,10 @@
 const long long numThreadSwitches = 10000000;
 const long long numMemAccesses = 100000000;
 const long long numFileAccesses = 100000;
+
+const long long numDirectFileAccesses = 1000;
+
+const int FileBlockSize = 4096;
 
 const char* TestFileName = "test.dat";
 
@@ -830,4 +838,70 @@ long long getCachedIOLatency(long fileSize, long stride)
 	fclose(fp);
 	
 	return ((time2 - time1) / numFileAccesses) - loopOverhead;
+}
+
+double getSequentialFileReadTime(int power)
+{
+	double arrLenDub = pow(2.0, (double) power) / ((double) sizeof(long));
+	long arrLen = (long)arrLenDub;
+
+	long intsPerBlock = ((long) FileBlockSize) / ((long) sizeof(long));
+	if (arrLen < intsPerBlock) {
+		arrLen = intsPerBlock;
+	} else {
+		arrLen = (arrLen / intsPerBlock) * intsPerBlock;
+	}
+	long numBlocks = arrLen / intsPerBlock;
+	long i, j;
+	long long time1, time2, loopOverhead;
+
+	long* arr;// = (long*) malloc(FileBlockSize);
+	int pageSize = getpagesize();
+	posix_memalign((void**) &arr, pageSize, FileBlockSize);
+
+	time1 = rdtsc();
+	for(j = 0; j < numDirectFileAccesses; j++)
+	{
+		memset(arr, 0, FileBlockSize);
+	}
+	time2 = rdtsc();
+	loopOverhead = (time2 - time1) / (numDirectFileAccesses);
+
+	for (i = 0; i < intsPerBlock; i++) {
+		arr[i] = 1;
+	}
+
+	//printf("loopOverhead=%lli\n", loopOverhead);
+	//fflush(stdout);
+
+	int fId = open(TestFileName, O_WRONLY | O_DIRECT);
+	for (i = 0; i < numBlocks; i++) {
+		arr[0] = (i+1) * FileBlockSize;
+		if (i == numBlocks - 1) {
+			arr[0] = 0;
+		}
+		write(fId, arr, FileBlockSize);
+	}
+	close(fId);
+	//printf("now reading\n");
+	//fflush(stdout);
+
+	fId = open(TestFileName, O_RDONLY | O_DIRECT);
+	arr[0] = 0;
+	time1 = rdtsc();
+	for(i = 0; i < numDirectFileAccesses; i++)
+	{
+		lseek(fId, arr[0], SEEK_SET);
+		read(fId, arr, FileBlockSize);
+	}
+	time2 = rdtsc();
+	//printf("access time = %lli\n", (time2-time1) / numDirectFileAccesses);
+	close(fId);
+	free(arr);
+
+	long long totalTime = ((time2 - time1) / numDirectFileAccesses) - loopOverhead;
+	//printf("totalTime=%lli\n", totalTime);
+	//fflush(stdout);
+	long double totalTimeDouble = (long double) totalTime;
+	return (double) (log(totalTimeDouble) / log((long double) 2.0));
 }
