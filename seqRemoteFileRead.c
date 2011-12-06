@@ -1,5 +1,5 @@
 /*=====================================================================
-    seqFileRead.c
+    seqRemoteFileRead.c
 ======================================================================*/
 
 /*=====================================================================
@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 	printf("<log file size>\t<log cycle latency per block>\n");
 	for (int i = 12; i <= 31; i += 1)
 	{
-		double timeR = getSequentialFileReadTime(i, "test.dat");
+		double timeR = getSequentialFileReadTime(i, "remote_mount/test.dat");
 		printf("%d\t%.2lf\n", i, timeR);
 		fflush(stdout);
 	}

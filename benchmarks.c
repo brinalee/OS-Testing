@@ -840,7 +840,7 @@ long long getCachedIOLatency(long fileSize, long stride)
 	return ((time2 - time1) / numFileAccesses) - loopOverhead;
 }
 
-double getSequentialFileReadTime(int power)
+double getSequentialFileReadTime(int power, const char* filename)
 {
 	double arrLenDub = pow(2.0, (double) power) / ((double) sizeof(long));
 	long arrLen = (long)arrLenDub;
@@ -866,7 +866,7 @@ double getSequentialFileReadTime(int power)
 	//printf("loopOverhead=%lli\n", loopOverhead);
 	//fflush(stdout);
 
-	int fId = open(TestFileName, O_WRONLY | O_DIRECT);
+	int fId = open(filename, O_WRONLY | O_DIRECT);
 	for (i = 0; i < numBlocks; i++) {
 		arr[0] = (i+1) * FileBlockSize;
 		if (i == numBlocks - 1) {
@@ -886,7 +886,7 @@ double getSequentialFileReadTime(int power)
 	time2 = rdtsc();
 	long long loopOverhead = (time2 - time1) / (numBlocks);
 	
-	fId = open(TestFileName, O_RDONLY | O_DIRECT);
+	fId = open(filename, O_RDONLY | O_DIRECT);
 	arr[0] = 0;
 	time1 = rdtsc();
 	read(fId, allData, FileBlockSize*numBlocks);
@@ -909,7 +909,7 @@ double getSequentialFileReadTime(int power)
 	return (double) (log(totalTimeDouble) / log((long double) 2.0));
 }
 
-double getRandomFileReadTime(int power)
+double getRandomFileReadTime(int power, const char* filename)
 {
 	double arrLenDub = pow(2.0, (double) power) / ((double) sizeof(long));
 	long arrLen = (long)arrLenDub;
@@ -982,7 +982,7 @@ double getRandomFileReadTime(int power)
 	//printf("loopOverhead=%lli\n", loopOverhead);
 	//fflush(stdout);
 
-	int fId = open(TestFileName, O_WRONLY | O_DIRECT);
+	int fId = open(filename, O_WRONLY | O_DIRECT);
 	for (i = 0; i < numBlocks; i++) {
 		arr[0] = (arrRef[i] < 0) ? 0 : arrRef[i] * FileBlockSize;
 		write(fId, arr, FileBlockSize);
@@ -992,7 +992,7 @@ double getRandomFileReadTime(int power)
 	//printf("now reading\n");
 	//fflush(stdout);
 
-	fId = open(TestFileName, O_RDONLY | O_DIRECT);
+	fId = open(filename, O_RDONLY | O_DIRECT);
 	arr[0] = 0;
 	time1 = rdtsc();
 	for(i = 0; i < numDirectFileAccesses; i++)

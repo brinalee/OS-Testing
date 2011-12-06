@@ -11,7 +11,7 @@ OBJECTS = utils.o \
           
 CFLAGS = -Wall -O0 -finline-functions -lpthread
 
-all: main memory pageFault filesys seqFileRead randFileRead
+all: main memory pageFault filesys seqFileRead randFileRead seqRemoteFileRead randRemoteFileRead
 
 main: main.o $(OBJECTS)
 	$(CC) -o $(CFLAGS) $(INCLUDES) $^ -o $@ -lpthread
@@ -28,6 +28,12 @@ seqFileRead: seqFileRead.o $(OBJECTS)
 randFileRead: randFileRead.o $(OBJECTS)
 	$(CC) -o $(CFLAGS) $(INCLUDES) $^ -o $@ -lpthread
 
+seqRemoteFileRead: seqRemoteFileRead.o $(OBJECTS)
+	$(CC) -o $(CFLAGS) $(INCLUDES) $^ -o $@ -lpthread
+
+randRemoteFileRead: randRemoteFileRead.o $(OBJECTS)
+	$(CC) -o $(CFLAGS) $(INCLUDES) $^ -o $@ -lpthread
+
 pageFault: pageFault.o $(OBJECTS)
 	$(CC) -o $(CFLAGS) $(INCLUDES) $^ -o $@ -lpthread
 
@@ -40,4 +46,4 @@ $(OBJECTS): Makefile
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o $@ $< 
 
 clean:
-	rm *.o main memory pageFault filesys seqFileRead randFileRead
+	rm *.o main memory pageFault filesys seqFileRead randFileRead seqRemoteFileRead randRemoteFileRead
