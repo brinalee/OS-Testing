@@ -78,8 +78,8 @@ long long getPageFaultOverhead(void);
 
 long long getCachedIOLatency(long fileSize, long stride);
 
-double getSequentialFileReadTime(int power, const char* filename);
+double getSequentialFileReadTime(int power, const char* filename, bool create);
 
-double getRandomFileReadTime(int power, const char* filename);
+double getRandomFileReadTime(int power, const char* filename, bool create);
 
 #endif

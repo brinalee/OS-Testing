@@ -840,7 +840,7 @@ long long getCachedIOLatency(long fileSize, long stride)
 	return ((time2 - time1) / numFileAccesses) - loopOverhead;
 }
 
-double getSequentialFileReadTime(int power, const char* filename)
+double getSequentialFileReadTime(int power, const char* filename, bool create)
 {
 	double arrLenDub = pow(2.0, (double) power) / ((double) sizeof(long));
 	long arrLen = (long)arrLenDub;
@@ -865,16 +865,18 @@ double getSequentialFileReadTime(int power, const char* filename)
 
 	//printf("loopOverhead=%lli\n", loopOverhead);
 	//fflush(stdout);
-
-	int fId = open(filename, O_WRONLY | O_DIRECT);
-	for (i = 0; i < numBlocks; i++) {
-		arr[0] = (i+1) * FileBlockSize;
-		if (i == numBlocks - 1) {
-			arr[0] = 0;
+	int fId;
+	if (create) {
+		fId = open(filename, O_WRONLY | O_DIRECT | O_CREAT);
+		for (i = 0; i < numBlocks; i++) {
+			arr[0] = (i+1) * FileBlockSize;
+			if (i == numBlocks - 1) {
+				arr[0] = 0;
+			}
+			write(fId, arr, FileBlockSize);
 		}
-		write(fId, arr, FileBlockSize);
+		close(fId);
 	}
-	close(fId);
 	//printf("now reading\n");
 	//fflush(stdout);
 
@@ -890,15 +892,9 @@ double getSequentialFileReadTime(int power, const char* filename)
 	arr[0] = 0;
 	time1 = rdtsc();
 	read(fId, allData, FileBlockSize*numBlocks);
-/*	for(i = 0; i < numDirectFileAccesses; i++)
-	{
-		lseek(fId, arr[0], SEEK_SET);
-		read(fId, arr, FileBlockSize);
-	}
-*/
 	time2 = rdtsc();
 	//printf("access time = %lli\n", (time2-time1) / numDirectFileAccesses);
-	close(fId);
+	close(fId); 
 	free(allData);
 	
 
@@ -909,7 +905,7 @@ double getSequentialFileReadTime(int power, const char* filename)
 	return (double) (log(totalTimeDouble) / log((long double) 2.0));
 }
 
-double getRandomFileReadTime(int power, const char* filename)
+double getRandomFileReadTime(int power, const char* filename, bool create)
 {
 	double arrLenDub = pow(2.0, (double) power) / ((double) sizeof(long));
 	long arrLen = (long)arrLenDub;
@@ -924,49 +920,10 @@ double getRandomFileReadTime(int power, const char* filename)
 	long i, j, idx1, idx2;
 	long long time1, time2, loopOverhead;
 
-	int randMax = RAND_MAX;
-	int maxRep = 50;
-	double frac;
-	long* arrRef = (long*) malloc(numBlocks*sizeof(long));
-	for(i = 0; i < numBlocks; i++)
-	{
-		arrRef[i] = -1;
-	}
-	
-	idx2 = 0;
-	idx1 = 0;
-	int rep = 0;
-	for(i = 0; i < numBlocks; i++)
-	{
-		frac = (double) rand() / (double) randMax;
-		idx2 = (long) (frac * ((double) numBlocks - 1));
-		while (rep < maxRep)
-		{
-			if (arrRef[idx2] < 0 && idx2 != idx1)
-			{
-				arrRef[idx1] = idx2;
-				idx1 = idx2;
-				break;
-			} else
-			{
-				rep ++;
-				frac = (double) rand() / (double) randMax;
-				idx2 = (long) (frac * ((double) numBlocks - 1));
-			}
-		}
-		if (rep >= maxRep)
-		{
-			break;
-		}
-		rep = 0;
-	}
-	
-	arrRef[idx2] = 0;
-
 	long* arr;// = (long*) malloc(FileBlockSize);
 	int pageSize = getpagesize();
 	posix_memalign((void**) &arr, pageSize, FileBlockSize);
-
+		
 	time1 = rdtsc();
 	for(j = 0; j < numDirectFileAccesses; j++)
 	{
@@ -978,17 +935,56 @@ double getRandomFileReadTime(int power, const char* filename)
 	for (i = 0; i < intsPerBlock; i++) {
 		arr[i] = 1;
 	}
+	int fId;
 
-	//printf("loopOverhead=%lli\n", loopOverhead);
-	//fflush(stdout);
+	if (create) {
+		int randMax = RAND_MAX;
+		int maxRep = 50;
+		double frac;
+		long* arrRef = (long*) malloc(numBlocks*sizeof(long));
+		for(i = 0; i < numBlocks; i++)
+		{
+			arrRef[i] = -1;
+		}
+	
+		idx2 = 0;
+		idx1 = 0;
+		int rep = 0;
+		for(i = 0; i < numBlocks; i++)
+		{
+			frac = (double) rand() / (double) randMax;
+			idx2 = (long) (frac * ((double) numBlocks - 1));
+			while (rep < maxRep)
+			{
+				if (arrRef[idx2] < 0 && idx2 != idx1)
+				{
+					arrRef[idx1] = idx2;
+					idx1 = idx2;
+					break;
+				} else
+				{
+					rep ++;
+					frac = (double) rand() / (double) randMax;
+					idx2 = (long) (frac * ((double) numBlocks - 1));
+				}
+			}
+			if (rep >= maxRep)
+			{
+				break;
+			}
+			rep = 0;
+		}
+	
+		arrRef[idx2] = 0;
 
-	int fId = open(filename, O_WRONLY | O_DIRECT);
-	for (i = 0; i < numBlocks; i++) {
-		arr[0] = (arrRef[i] < 0) ? 0 : arrRef[i] * FileBlockSize;
-		write(fId, arr, FileBlockSize);
+		fId = open(filename, O_WRONLY | O_DIRECT | O_CREAT);
+		for (i = 0; i < numBlocks; i++) {
+			arr[0] = (arrRef[i] < 0) ? 0 : arrRef[i] * FileBlockSize;
+			write(fId, arr, FileBlockSize);
+		}
+		close(fId);
+		free(arrRef);
 	}
-	close(fId);
-	free(arrRef);
 	//printf("now reading\n");
 	//fflush(stdout);
 
@@ -1002,7 +998,7 @@ double getRandomFileReadTime(int power, const char* filename)
 	}
 	time2 = rdtsc();
 	//printf("access time = %lli\n", (time2-time1) / numDirectFileAccesses);
-	close(fId);
+	close(fId); 
 	free(arr);
 
 	long long totalTime = ((time2 - time1) / numDirectFileAccesses) - loopOverhead;

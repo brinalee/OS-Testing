@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 	printf("<log file size>\t<log cycle latency per block>\n");
 	for (int i = 12; i <= 31; i += 1)
 	{
-		double timeR = getRandomFileReadTime(i, "test.dat");
+		double timeR = getRandomFileReadTime(i, "test.dat", true);
 		printf("%d\t%.2lf\n", i, timeR);
 		fflush(stdout);
 	}
