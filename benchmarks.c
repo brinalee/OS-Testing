@@ -36,7 +36,7 @@ const int FileBlockSize = 4096;
 
 const char* TestFileName = "test.dat";
 
-const long ContentionFileSize = 33554432;
+const long ContentionFileSize = 67108864;
 
 const char* ContentionFileNames[] = {"test_seq_thread1.dat", "test_seq_thread2.dat", "test_seq_thread3.dat", "test_seq_thread4.dat", "test_seq_thread5.dat", "test_seq_thread6.dat", "test_seq_thread7.dat", "test_seq_thread8.dat", "test_seq_thread9.dat", "test_seq_thread10.dat", "test_seq_thread11.dat", "test_seq_thread12.dat", "test_seq_thread13.dat", "test_seq_thread14.dat", "test_seq_thread15.dat", "test_seq_thread16.dat"};
 const int MaxNumContendingThreads = 16;
