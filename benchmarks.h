@@ -1,28 +1,13 @@
 #ifndef BENCHMARKS_h
 #define BENCHMARKS_h
-/*=====================================================================
-    UTILS.h
-    Description         : Utility functions to be shared between 
-                          measurement modules
-======================================================================*/
 
-/*=====================================================================
-    Defines
-======================================================================*/
-
-/*=====================================================================
-    Typedefs
-======================================================================*/
-
-/*=====================================================================
-    Constants
-======================================================================*/
 
 const int NUM_COLLECTIONS = 100000;
 
-/*=====================================================================
-    Functions
-======================================================================*/
+struct ThreadContentionParams {
+	long long overheadPerBlock;
+	int threadID;
+};
 
 unsigned long long getMeasureOverhead(void);
 
@@ -51,6 +36,10 @@ void printSingleProcessCreateTime(void);
 void* thread_run(void* llu_ptr);
 
 void* thread_switch(void* idt);
+
+void* thread_read_file(void* voidParams);
+
+long long getFileContentionOverhead(int count);
 
 long long getThreadContextSwitchOverhead(unsigned long long threadRunOverhead);
 

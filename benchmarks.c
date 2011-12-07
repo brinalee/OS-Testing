@@ -21,26 +21,11 @@
 #include <sched.h>
 #include <math.h>
 #include <limits.h>
-
 #include <fcntl.h>
 
-/* Local Headers */
 #include "benchmarks.h"
 #include "utils.h"
 
-/*=====================================================================
-                    DEFINITIONS AND DECLARATIONS 
-======================================================================*/
-
-/* Typedefs and Enums */
-
-//#define _GNU_SOURCE
-
-/* Constants and Macros */
-
-/* Variables */
-
-// used to measure context switch oerhead
 const long long numThreadSwitches = 10000000;
 const long long numMemAccesses = 100000000;
 const long long numFileAccesses = 100000;
@@ -51,6 +36,12 @@ const int FileBlockSize = 4096;
 
 const char* TestFileName = "test.dat";
 
+const long ContentionFileSize = 33554432;
+
+const char* ContentionFileNames[] = {"test_seq_thread1.dat", "test_seq_thread2.dat", "test_seq_thread3.dat", "test_seq_thread4.dat", "test_seq_thread5.dat", "test_seq_thread6.dat", "test_seq_thread7.dat", "test_seq_thread8.dat", "test_seq_thread9.dat", "test_seq_thread10.dat", "test_seq_thread11.dat", "test_seq_thread12.dat", "test_seq_thread13.dat", "test_seq_thread14.dat", "test_seq_thread15.dat", "test_seq_thread16.dat"};
+const int MaxNumContendingThreads = 16;
+
+pthread_barrier_t ContentionBarrier;
 
 /*=====================================================================
                      FUNCTION DECLARATIONS 
@@ -272,6 +263,58 @@ void* thread_switch(void* idt)
 	}
 	
 	return 0;
+}
+
+void* thread_read_file(void* voidParams)
+{
+	ThreadContentionParams* params = (ThreadContentionParams*) voidParams;
+	int pageSize = getpagesize();
+	long* allData;
+	long long time1, time2;
+
+	posix_memalign((void**) &allData, pageSize, ContentionFileSize);
+	int fId = open(ContentionFileNames[params->threadID], O_RDONLY | O_DIRECT);
+
+	pthread_barrier_wait(&ContentionBarrier);
+
+	time1 = rdtsc();
+	read(fId, allData, ContentionFileSize);
+	time2 = rdtsc();
+	close(fId); 
+	free(allData);
+
+	params->overheadPerBlock = (time2 - time1) / (ContentionFileSize / FileBlockSize);
+	
+	return 0;
+}
+
+long long getFileContentionOverhead(int count)
+{
+	if (count < 1 || count > MaxNumContendingThreads) {
+		printf("ERROR; invalid count %d\n", count);
+		return 0;
+	}
+	
+	pthread_t* threads = (pthread_t*) calloc( count, sizeof(pthread_t) );
+	pthread_barrier_init(&ContentionBarrier, NULL, count);
+	ThreadContentionParams* paramArr = (ThreadContentionParams*) calloc( count, sizeof(ThreadContentionParams) );
+	
+	for (int i = 0; i < count; i++) {
+		paramArr[i].overheadPerBlock = 0;
+		paramArr[i].threadID = i;
+		pthread_create(&(threads[i]), NULL, thread_read_file, (void*) (&paramArr[i]));
+	}
+
+	long long overhead = 0;
+	for (int i = 0; i < count; i++) {
+		pthread_join(threads[i], NULL);
+		overhead += paramArr[i].overheadPerBlock;
+	}
+
+	free( threads );
+	free( paramArr );
+	
+	return overhead / ((long long) count);
 }
 
 long long getThreadContextSwitchOverhead(unsigned long long threadRunOverhead)
