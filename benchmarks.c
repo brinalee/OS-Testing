@@ -485,30 +485,30 @@ long long getSystemCallOverhead(void)
 	return ((time2 - time1) / (long long) NUM_COLLECTIONS) - loopOverhead;
 }
 
-long long getMemoryLatency(int power)
+long double getMemoryLatency(int power, long stride)
 {
-	double arrLenDub = pow(2.0, (double) power);
-	int arrLen = (int)arrLenDub;
+	double arrLenDub = pow(2.0, (double) power) / ((double) sizeof(long));
+	long arrLen = (long)arrLenDub;
 	
 	long long time1, time2, loopOverhead;
 	
-	int randMax = RAND_MAX;
-	int maxRep = 50;
-	double frac;
-	
-	int idx1, idx2, i, rep;
+	long idx1, idx2, i;
 	idx2 = 0;
 	
+	long offset = 0;
 	time1 = rdtsc();
 	for(i = 0; i < numMemAccesses; i++)
 	{
-		idx2 = idx2+1;
+		offset += 1;
 	}
 	time2 = rdtsc();
 	
 	loopOverhead = (time2 - time1) / (numMemAccesses);
 	
-	int* arr = (int*) malloc(arrLen*sizeof(int));
+	//printf("size of long=%d, arr size=%li\n", (int)sizeof(long), arrLen);
+	//fflush(stdout);
+	
+	long* arr = (long*) malloc(arrLen*sizeof(long));
 	for(i = 0; i < arrLen; i++)
 	{
 		arr[i] = -1;
@@ -516,35 +516,25 @@ long long getMemoryLatency(int power)
 	
 	idx2 = 0;
 	idx1 = 0;
-	rep = 0;
-	for(i = 0; i < arrLen; i++)
+	long numFill = (long) (0.97 * (double) arrLen);
+	if (numMemAccesses < numFill) {
+		numFill = numMemAccesses + 1;
+	}
+	for(i = 0; i < numFill; i++)
 	{
-		frac = (double) rand() / (double) randMax;
-		idx2 = (int) (frac * ((double) arrLen - 1));
-		while (rep < maxRep)
-		{
-			if (arr[idx2] < 0)
-			{
-				arr[idx1] = idx2;
-				idx1 = idx2;
-				break;
-			} else
-			{
-				rep ++;
-				frac = (double) rand() / (double) randMax;
-				idx2 = (int) (frac * ((double) arrLen - 1));
-			}
+		idx2 = (idx1 + stride) % (arrLen-1);
+		
+		while (arr[idx2] >= 0 && idx2 != idx1) {
+			idx2 = (idx2 >= arrLen) ? 1 : idx2 + 1;
 		}
-		if (rep >= maxRep)
-		{
-			break;
-		}
-		rep = 0;
+		//printf("idx1=%li, idx2=%li\n", idx1, idx2);
+		//fflush(stdout);
+		
+		arr[idx1] = idx2;
+		idx1 = idx2;
 	}
 	
 	arr[idx2] = 0;
-	
-	idx2 = 0;
 	
 	time1 = rdtsc();
 	for(i = 0; i < numMemAccesses; i++)
@@ -552,10 +542,11 @@ long long getMemoryLatency(int power)
 		idx2 = arr[idx2];
 	}
 	time2 = rdtsc();
-	
 	free(arr);
+
+	long double latency = (((long double) (time2 - time1)) / ((long double) numMemAccesses)) - (long double) loopOverhead;
 	
-	return ((time2 - time1) / (i)) - loopOverhead;
+	return latency;
 }
 
 long double getMemoryWriteBandwith(void)
@@ -898,7 +889,7 @@ double getSequentialFileReadTime(int power, const char* filename, bool create)
 	free(allData);
 	
 
-	long long totalTime = ((time2 - time1) / numBlocks);
+	long long totalTime = ((time2 - time1) / numBlocks) - loopOverhead;
 	//printf("totalTime=%lli\n", totalTime);
 	//fflush(stdout);
 	long double totalTimeDouble = (long double) totalTime;

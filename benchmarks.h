@@ -68,7 +68,7 @@ long long getSingleProcessRunOverhead(void);
 
 long long getSystemCallOverhead(void);
 
-long long getMemoryLatency(int power);
+long double getMemoryLatency(int power, long stride);
 
 long double getMemoryWriteBandwith(void);
 
