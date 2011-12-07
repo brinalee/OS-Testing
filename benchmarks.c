@@ -898,7 +898,7 @@ double getSequentialFileReadTime(int power, const char* filename, bool create)
 	free(allData);
 	
 
-	long long totalTime = ((time2 - time1) / numBlocks) - loopOverhead;
+	long long totalTime = ((time2 - time1) / numBlocks);
 	//printf("totalTime=%lli\n", totalTime);
 	//fflush(stdout);
 	long double totalTimeDouble = (long double) totalTime;
