@@ -15,19 +15,19 @@ int main(int argc, char *argv[])
 {
 	long double timeD;
 	
-	printf("<log2(byte array size)>\t<8 MB stride latency>\t<4 MB stride latency>\t<1 MB stride latency>\t<24 KB stride latency>\t<12 KB stride latency>\n");
+	printf("<log2(byte array size)>\t<150 MB stride latency>\t<8 MB stride latency>\t<4 MB stride latency>\t<24 KB stride latency>\t<12 KB stride latency>\n");
 	for (int i = 8; i <= 31; i++)
 	{
 		printf("%d\t", i);
+		timeD = getMemoryLatency(i,  18750001);
+		printf("%.2LF\t", timeD);
+		fflush(stdout);
+
 		timeD = getMemoryLatency(i,  1000003);
 		printf("%.2LF\t", timeD);
 		fflush(stdout);
 
 		timeD = getMemoryLatency(i,  510073);
-		printf("%.2LF\t", timeD);
-		fflush(stdout);
-
-		timeD = getMemoryLatency(i,  125029);
 		printf("%.2LF\t", timeD);
 		fflush(stdout);
 
