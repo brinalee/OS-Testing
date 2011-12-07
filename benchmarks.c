@@ -535,7 +535,6 @@ long double getMemoryLatency(int power, long stride)
 	}
 	
 	arr[idx2] = 0;
-	idx2 = 0;
 
 	time1 = rdtsc();
 	for(i = 0; i < numMemAccesses; i++)
