@@ -71,6 +71,8 @@ int main(int argc, char *argv[])
 	}
 	bigSendBuffer[arrLen-1] = '\0';
 
+	printf("sending %li a's\n", arrLen-1);
+
 	time1 = rdtsc();
 	send(sockRes, bigSendBuffer, arrLen, 0);
 	recv(sockRes, receiveBuffer, 2, 0);

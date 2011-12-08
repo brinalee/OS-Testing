@@ -81,6 +81,14 @@ int main(int argc, char *argv[])
 
 	bytes_recieved = recv(connectRes,bigReceiveBuffer,arrLen,0);
 	send(connectRes, sendBuffer, 2, 0);
+
+	long i = 0;
+	while ( bigReceiveBuffer[i] != 'a' ) {
+		i++;
+	}
+
+	printf("recieved %li a's\n", i);
+
 	close(connectRes);
 	free(bigReceiveBuffer);
 	close(sockRes);
