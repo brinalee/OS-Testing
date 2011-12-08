@@ -46,8 +46,9 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 		
-	printf("\nWaiting on port 2154\n");
+	printf("\nWaiting on port 2154 for bounce-back\n");
 	fflush(stdout);
+	sendBuffer[0] = 'q';
 	sendBuffer[1] = '\0';
 	int _size = sizeof(struct sockaddr_in);
 
@@ -63,15 +64,25 @@ int main(int argc, char *argv[])
 
 		if (receiveBuffer[0] == 'q' || receiveBuffer[0] == 'Q')
 		{
-			printf("Recieved quit, closing connection\n");
+			printf("Recieved quit\n");
 			fflush(stdout);
-			close(connectRes);
 			break;
 		} else {
 			send(connectRes, receiveBuffer, 2, 0);
 		}
 	}
-   
+	
+	long bufSize = 1073741824;
+	long arrLen = bufSize / ((long) sizeof(char));
+	char* bigReceiveBuffer = (char*) malloc(bufSize);
+
+	printf("\nWaiting for a big array\n");
+	fflush(stdout);
+
+	bytes_recieved = recv(connectRes,bigReceiveBuffer,arrLen,0);
+	send(connectRes, sendBuffer, 2, 0);
+	close(connectRes);
+	free(bigReceiveBuffer);
 	close(sockRes);
 	return 0;
 } 
