@@ -20,7 +20,7 @@ int main()
         struct hostent *host;
         struct sockaddr_in server_addr;  
 
-        host = gethostbyname("127.0.0.1");
+        host = gethostbyname("137.110.161.199");
 
         if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
             perror("Socket");
