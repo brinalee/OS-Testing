@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 
 	host = gethostbyname("137.110.161.199");
 	// rodney.ucsd.edu: 137.110.161.199
-	// cyclo.ucsd.edu: 
+	// cyclo.ucsd.edu: 137.110.161.115
 
 	if ((sockRes = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
 		fprintf(stderr, "Could not create a socket!\n");
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	long numBouceBacks = 1000;
+	long numBouceBacks = 100000;
 	long count = 0;
 	long long time1, time2 = 0;
 	sendBuffer[0] = 'g';
