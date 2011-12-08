@@ -16,6 +16,7 @@
 #include <time.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/syscall.h>
 #include <unistd.h>
 #include <pthread.h>
 #include <sched.h>
@@ -521,7 +522,7 @@ long long getSystemCallOverhead(void)
 	time1 = rdtsc();
 	for (i = 0; i < NUM_COLLECTIONS; i++)
 	{
-		res = getpid();
+		res = syscall(SYS_gettid);
 	}
 	time2 = rdtsc();
 	
