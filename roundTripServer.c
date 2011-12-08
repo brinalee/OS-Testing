@@ -80,6 +80,9 @@ int main(int argc, char *argv[])
 	fflush(stdout);
 
 	bytes_recieved = recv(connectRes,bigReceiveBuffer,arrLen,0);
+	while (bytes_recieved < bufSize) {
+		bytes_recieved += recv(connectRes,bigReceiveBuffer,arrLen,0);
+	}
 	send(connectRes, sendBuffer, 2, 0);
 
 	long i = 0;

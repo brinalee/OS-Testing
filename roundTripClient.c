@@ -84,6 +84,6 @@ int main(int argc, char *argv[])
 	printf("time = %lli\n", time2 - time1);
 
 	long double totalTime = ((long double) bufSize) / ((long double) (time2 - time1));
-	printf("Bandwidth = %.2LF GB/sec\n", totalTime * (2.4e9/1.0e9));
+	printf("Bandwidth = %.2LF MB/sec\n", totalTime * (2.4e9/1.0e6));
 	return 0;
 }
