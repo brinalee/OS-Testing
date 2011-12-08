@@ -57,8 +57,10 @@ int main(int argc, char *argv[])
 
 	sendBuffer[0] = 'q';
 	send(sockRes,sendBuffer,strlen(sendBuffer), 0);
+
+	long double overhead = ((long double) (time2 - time1)) / ((long double) numBouceBacks);
 	
-	printf("Round-trip time = %.2LF\n us\n", (((long double) (time2 - time1)) / ((long double) numBouceBacks)) / (2.4e3));
+	printf("Round-trip time = %.2LF us\n", overhead / (2.4e3));
 
 	//printf("\nSending big array ...\n");
 	fflush(stdout);
@@ -83,7 +85,7 @@ int main(int argc, char *argv[])
 	
 	//printf("time = %lli\n", time2 - time1);
 
-	long double totalTime = ((long double) bufSize) / ((long double) (time2 - time1));
+	long double totalTime = ((long double) bufSize) / (((long double) (time2 - time1)) - overhead);
 	printf("Bandwidth = %.2LF MB/sec\n", totalTime * (2.4e9/1.0e6));
 	return 0;
 }
