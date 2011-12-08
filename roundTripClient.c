@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 	struct hostent *host;
 	struct sockaddr_in serverAddress;  
 
-	host = gethostbyname("137.110.161.199");
+	host = gethostbyname("137.110.161.115");
 	// rodney.ucsd.edu: 137.110.161.199
 	// cyclo.ucsd.edu: 137.110.161.115
 
