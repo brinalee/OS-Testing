@@ -1,4 +1,3 @@
-/* tcpserver.c */
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -11,7 +10,7 @@
 #include <string.h>
 
 
-int main()
+int main(int argc, char *argv[])
 {
         int sock, connected, bytes_recieved, _true = 1;  
         char send_data [1024] , recv_data[1024];       

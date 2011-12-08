@@ -38,8 +38,8 @@ const char* TestFileName = "test.dat";
 
 const long ContentionFileSize = 67108864;
 
-const char* ContentionFileNames[] = {"test_seq_thread1.dat", "test_seq_thread2.dat", "test_seq_thread3.dat", "test_seq_thread4.dat", "test_seq_thread5.dat", "test_seq_thread6.dat", "test_seq_thread7.dat", "test_seq_thread8.dat", "test_seq_thread9.dat", "test_seq_thread10.dat", "test_seq_thread11.dat", "test_seq_thread12.dat", "test_seq_thread13.dat", "test_seq_thread14.dat", "test_seq_thread15.dat", "test_seq_thread16.dat", "test_seq_thread17.dat", "test_seq_thread18.dat", "test_seq_thread19.dat", "test_seq_thread20.dat", "test_seq_thread21.dat", "test_seq_thread22.dat", "test_seq_thread23.dat", "test_seq_thread24.dat", "test_seq_thread25.dat", "test_seq_thread26.dat"};
-const int MaxNumContendingThreads = 26;
+const char* ContentionFileNames[] = {"test_seq_thread1.dat", "test_seq_thread2.dat", "test_seq_thread3.dat", "test_seq_thread4.dat", "test_seq_thread5.dat", "test_seq_thread6.dat", "test_seq_thread7.dat", "test_seq_thread8.dat", "test_seq_thread9.dat", "test_seq_thread10.dat", "test_seq_thread11.dat", "test_seq_thread12.dat", "test_seq_thread13.dat", "test_seq_thread14.dat", "test_seq_thread15.dat", "test_seq_thread16.dat", "test_seq_thread17.dat", "test_seq_thread18.dat", "test_seq_thread19.dat", "test_seq_thread20.dat", "test_seq_thread21.dat", "test_seq_thread22.dat", "test_seq_thread23.dat", "test_seq_thread24.dat", "test_seq_thread25.dat", "test_seq_thread26.dat", "test_seq_thread27.dat", "test_seq_thread28.dat", "test_seq_thread29.dat", "test_seq_thread30.dat", "test_seq_thread31.dat", "test_seq_thread32.dat", "test_seq_thread33.dat", "test_seq_thread34.dat", "test_seq_thread35.dat", "test_seq_thread36.dat"};
+const int MaxNumContendingThreads = 36;
 
 pthread_barrier_t ContentionBarrier;
 

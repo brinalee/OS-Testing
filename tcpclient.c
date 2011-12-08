@@ -1,4 +1,3 @@
-/* tcpclient.c */
 
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -11,10 +10,8 @@
 #include <errno.h>
 
 
-int main()
-
+int main(int argc, char *argv[])
 {
-
         int sock, bytes_recieved;  
         char send_data[1024],recv_data[1024];
         struct hostent *host;
