@@ -49,35 +49,29 @@ int main(int argc, char *argv[])
 	printf("\nWaiting on port 2154\n");
 	fflush(stdout);
 	sendBuffer[1] = '\0';
-	int _size;
-	while(1)
-	{  
+	int _size = sizeof(struct sockaddr_in);
 
-		_size = sizeof(struct sockaddr_in);
+	connectRes = accept(sockRes, (struct sockaddr *)&clientAddress, (socklen_t*) &_size);
 
-		connectRes = accept(sockRes, (struct sockaddr *)&clientAddress, (socklen_t*) &_size);
+	printf("recieved connection from (%s , %d), commencing bounce-back\n", inet_ntoa(clientAddress.sin_addr),ntohs(clientAddress.sin_port));
+	fflush(stdout);
 
-		printf("recieved connection from (%s , %d), commencing bounce-back\n", inet_ntoa(clientAddress.sin_addr),ntohs(clientAddress.sin_port));
-		fflush(stdout);
+	while (1)
+	{
+		bytes_recieved = recv(connectRes,receiveBuffer,2,0);
+		receiveBuffer[1] = '\0';
 
-		while (1)
+		if (receiveBuffer[0] == 'q' || receiveBuffer[0] == 'Q')
 		{
-			bytes_recieved = recv(connectRes,receiveBuffer,2,0);
-
-			receiveBuffer[1] = '\0';
-
-			if (receiveBuffer[0] == 'q' || receiveBuffer[0] == 'Q')
-			{
-				printf("Recieved quit, closing connection\n");
-				fflush(stdout);
-				close(connectRes);
-				break;
-			} else {
-				sendBuffer[0] = 'g';
-				send(connectRes, sendBuffer, 2, 0);
-			}
+			printf("Recieved quit, closing connection\n");
+			fflush(stdout);
+			close(connectRes);
+			break;
+		} else {
+			send(connectRes, receiveBuffer, 2, 0);
 		}
-	}       
+	}
+   
 	close(sockRes);
 	return 0;
 } 

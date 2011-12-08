@@ -9,17 +9,19 @@
 #include <unistd.h>
 #include <errno.h>
 
+#include "utils.h"
 
 int main(int argc, char *argv[])
 {
 	int sockRes;
-	int bytesRecieved;  
 	char sendBuffer[50];
 	char receiveBuffer[50];
 	struct hostent *host;
 	struct sockaddr_in serverAddress;  
 
 	host = gethostbyname("137.110.161.199");
+	// rodney.ucsd.edu: 137.110.161.199
+	// cyclo.ucsd.edu: 
 
 	if ((sockRes = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
 		fprintf(stderr, "Could not create a socket!\n");
@@ -44,31 +46,19 @@ int main(int argc, char *argv[])
 	sendBuffer[0] = 'g';
 	sendBuffer[1] = '\0';
 
+	time1 = rdtsc();
 	for (count = 0; count < numBouceBacks; count++)
 	{
 		send(sockRes, sendBuffer, 2, 0);
 		recv(sockRes, receiveBuffer, 2, 0);
-		receiveBuffer[bytesRecieved] = '\0';
- 
-		if (strcmp(receiveBuffer , "q") == 0 || strcmp(receiveBuffer , "Q") == 0)
-		{
-			close(sockRes);
-			break;
-		} else {
-			printf("\nRecieved data = %s " , receiveBuffer);
-		}
+		receiveBuffer[1] = '\0';
+        }
+	time2 = rdtsc();
 
-		printf("\nSEND (q or Q to quit) : ");
-		gets(sendBuffer);
-           
-		if (strcmp(sendBuffer , "q") != 0 && strcmp(sendBuffer , "Q") != 0) {
-			
-		} else {
-			send(sockRes,sendBuffer,strlen(sendBuffer), 0);   
-			close(sockRes);
-			break;
-		}
-        
-        }   
+	sendBuffer[0] = 'q';
+	send(sockRes,sendBuffer,strlen(sendBuffer), 0);
+	close(sockRes);
+	
+	printf("Round-trip time = %.2LF\n", ((long double) (time2 - time1)) / ((long double) numBouceBacks));
 	return 0;
 }
