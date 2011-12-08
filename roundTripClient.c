@@ -58,9 +58,9 @@ int main(int argc, char *argv[])
 	sendBuffer[0] = 'q';
 	send(sockRes,sendBuffer,strlen(sendBuffer), 0);
 	
-	printf("Round-trip time = %.2LF\n", ((long double) (time2 - time1)) / ((long double) numBouceBacks));
+	printf("Round-trip time = %.2LF\n us\n", (((long double) (time2 - time1)) / ((long double) numBouceBacks)) / (2.4e3));
 
-	printf("\nSending big array ...\n");
+	//printf("\nSending big array ...\n");
 	fflush(stdout);
 
 	long bufSize = 1073741824;
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 	}
 	bigSendBuffer[arrLen-1] = '\0';
 
-	printf("sending %li a's\n", arrLen-1);
+	//printf("sending %li a's\n", arrLen-1);
 
 	time1 = rdtsc();
 	send(sockRes, bigSendBuffer, arrLen, 0);
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 	free(bigSendBuffer);
 	close(sockRes);
 	
-	printf("time = %lli\n", time2 - time1);
+	//printf("time = %lli\n", time2 - time1);
 
 	long double totalTime = ((long double) bufSize) / ((long double) (time2 - time1));
 	printf("Bandwidth = %.2LF MB/sec\n", totalTime * (2.4e9/1.0e6));
