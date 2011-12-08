@@ -11,7 +11,7 @@ OBJECTS = utils.o \
           
 CFLAGS = -Wall -O0 -finline-functions -lpthread
 
-all: main memory pageFault filesys seqFileRead randFileRead seqRemoteFileRead randRemoteFileRead fileContention tcpclient tcpserver
+all: main memory pageFault filesys seqFileRead randFileRead seqRemoteFileRead randRemoteFileRead fileContention roundTripClient roundTripServer
  
 main: main.o $(OBJECTS)
 	$(CC) -o $(CFLAGS) $(INCLUDES) $^ -o $@ -lpthread
@@ -43,10 +43,10 @@ pageFault: pageFault.o $(OBJECTS)
 processStartOverhead: processStartOverhead.o $(OBJECTS)
 	$(CC) -o $(CFLAGS) $(INCLUDES) $^ -o $@ -lpthread
 
-tcpclient: tcpclient.o $(OBJECTS)
+roundTripClient: roundTripClient.o $(OBJECTS)
 	$(CC) -o $(CFLAGS) $(INCLUDES) $^ -o $@ -lpthread
 
-tcpserver: tcpserver.o $(OBJECTS)
+roundTripServer: roundTripServer.o $(OBJECTS)
 	$(CC) -o $(CFLAGS) $(INCLUDES) $^ -o $@ -lpthread
 
 $(OBJECTS): Makefile
@@ -55,4 +55,4 @@ $(OBJECTS): Makefile
 	$(CC) -c $(CFLAGS) $(INCLUDES) -o $@ $< 
 
 clean:
-	rm *.o main memory pageFault filesys seqFileRead randFileRead seqRemoteFileRead randRemoteFileRead fileContention tcpclient tcpserver
+	rm *.o main memory pageFault filesys seqFileRead randFileRead seqRemoteFileRead randRemoteFileRead fileContention roundTripClient roundTripServer
