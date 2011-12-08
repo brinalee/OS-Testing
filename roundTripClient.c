@@ -78,6 +78,8 @@ int main(int argc, char *argv[])
 
 	free(bigSendBuffer);
 	close(sockRes);
+	
+	printf("time = %lli\n", time2 - time1);
 
 	long double totalTime = ((long double) bufSize) / ((long double) (time2 - time1));
 	printf("Bandwidth = %.2LF GB/sec\n", totalTime * (2.4e9/1.0e9));
