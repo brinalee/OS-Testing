@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 	long double timeD;
 	
 	printf("<# Contending Threads>\t<sequential read latency per block in us>\n");
-	for (int i = 1; i <= 16; i++)
+	for (int i = 1; i <= 26; i++)
 	{
 		// 1000003, 510073, 125029, 4003, 2003
 		printf("%d\t", i);
