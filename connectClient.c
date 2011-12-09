@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
 {
 	int sockRes;
 	struct hostent *host;
+	char sendBuffer[50];
 	struct sockaddr_in serverAddress;  
 
 	host = gethostbyname("137.110.161.199");
@@ -37,10 +38,13 @@ int main(int argc, char *argv[])
 	long long connectTime = 0;
 	long long teardownTime = 0;
 	long long time1, time2;
+	sendBuffer[0] = 'q';
+	sendBuffer[1] = '\0';
 
 	for (long i = 0; i < numBouceBacks; i++) {
 		time1 = rdtsc();
 		connect(sockRes, (struct sockaddr *)&serverAddress, sizeof(struct sockaddr));
+		recv(sockRes, sendBuffer, 2, 0);
 		time2 = rdtsc();
 		connectTime += time2 - time1;
 

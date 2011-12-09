@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
         int sockRes = 1;
 	int connectRes = 1;
 	int sockOption = 1;
+	char sendBuffer[50];
 
 	struct sockaddr_in serverAddress,clientAddress;    
 
@@ -46,10 +47,15 @@ int main(int argc, char *argv[])
 	printf("\nWaiting on port 2155 for bounce-back\n");
 	fflush(stdout);
 	int _size = sizeof(struct sockaddr_in);
-
+	sendBuffer[0] = 'q';
+	sendBuffer[1] = '\0';
 	while (1)
 	{
 		connectRes = accept(sockRes, (struct sockaddr *)&clientAddress, (socklen_t*) &_size);
+		send(connectRes, sendBuffer, 2, 0);
+		close(sockRes);
+		printf("Recieved connection, sent reply, and closed ... going again\n");
+		fflush(stdout);
 	}
 
 	//close(connectRes);
