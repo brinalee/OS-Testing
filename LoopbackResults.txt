@@ -1,0 +1,2 @@
+Round-trip time = 14.82 us
+Bandwidth = 867.08 MB/sec
