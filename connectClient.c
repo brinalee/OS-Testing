@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 
 
 
-	long numBouceBacks = 10000;
+	long numBouceBacks = 1000000;
 	long long connectTime = 0;
 	long long teardownTime = 0;
 	long long time1, time2;
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 	long double overheadC = ((long double) connectTime) / ((long double) numBouceBacks);
 	long double overheadT = ((long double) teardownTime) / ((long double) numBouceBacks);
 	
-	printf("Setup latency = %.2LF us\n", overheadC / (2.4e3));
-	printf("Tear-down latency = %.2LF us\n", overheadT / (2.4e3));
+	printf("Setup latency = %.2LF ns\n", overheadC / (2.4));
+	printf("Tear-down latency = %.2LF ns\n", overheadT / (2.4));
 	return 0;
 }
