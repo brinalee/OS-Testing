@@ -52,10 +52,6 @@ int main(int argc, char *argv[])
 	while (1)
 	{
 		connectRes = accept(sockRes, (struct sockaddr *)&clientAddress, (socklen_t*) &_size);
-		send(connectRes, sendBuffer, 2, 0);
-		close(sockRes);
-		printf("Recieved connection, sent reply, and closed ... going again\n");
-		fflush(stdout);
 	}
 
 	//close(connectRes);

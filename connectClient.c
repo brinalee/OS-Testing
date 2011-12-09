@@ -15,22 +15,12 @@ int main(int argc, char *argv[])
 {
 	int sockRes;
 	struct hostent *host;
-	char sendBuffer[50];
+	//char sendBuffer[50];
 	struct sockaddr_in serverAddress;  
 
 	host = gethostbyname("137.110.161.199");
 	// rodney.ucsd.edu: 137.110.161.199
 	// cyclo.ucsd.edu: 137.110.161.115
-
-	if ((sockRes = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
-		fprintf(stderr, "Could not create a socket!\n");
-		exit(1);
-	}
-
-	serverAddress.sin_family = AF_INET;     
-	serverAddress.sin_port = htons(2155);   
-	serverAddress.sin_addr = *((struct in_addr *)host->h_addr);
-	bzero(&(serverAddress.sin_zero),8); 
 
 
 
@@ -38,13 +28,19 @@ int main(int argc, char *argv[])
 	long long connectTime = 0;
 	long long teardownTime = 0;
 	long long time1, time2;
-	sendBuffer[0] = 'q';
-	sendBuffer[1] = '\0';
 
 	for (long i = 0; i < numBouceBacks; i++) {
 		time1 = rdtsc();
+		if ((sockRes = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+			fprintf(stderr, "Could not create a socket!\n");
+			exit(1);
+		}
+
+		serverAddress.sin_family = AF_INET;     
+		serverAddress.sin_port = htons(2155);   
+		serverAddress.sin_addr = *((struct in_addr *)host->h_addr);
+		bzero(&(serverAddress.sin_zero),8); 
 		connect(sockRes, (struct sockaddr *)&serverAddress, sizeof(struct sockaddr));
-		recv(sockRes, sendBuffer, 2, 0);
 		time2 = rdtsc();
 		connectTime += time2 - time1;
 
