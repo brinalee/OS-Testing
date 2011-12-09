@@ -595,7 +595,7 @@ long double getMemoryLatency(int power, long stride)
 
 long double getMemoryWriteBandwith(void)
 {
-	double arrLenDub = pow(2.0, 20.0);
+	double arrLenDub = pow(2.0, 24.0);
 	int arrLen = (int)arrLenDub;
 	
 	long long j, ref1, time1, time2, loopOverhead, overhead, dataSize;
