@@ -14,6 +14,18 @@
 int main(int argc, char *argv[])
 {
 	long double timeD;
+
+	printf("Memory read bandwith = ");
+	fflush(stdout);
+	timeD = getMemoryReadBandwith();
+	timeD = timeD * (2.4e9/1.0e9);
+	printf("%.2LF GB/sec\n\n", timeD);
+	
+	printf("Memory write bandwith = ");
+	fflush(stdout);
+	timeD = getMemoryWriteBandwith();
+	timeD = timeD * (2.4e9/1.0e9);
+	printf("%.2LF GB/sec\n\n", timeD);
 	
 	printf("<log2(byte array size)>\t<150 MB stride latency>\t<8 MB stride latency>\t<4 MB stride latency>\t<24 KB stride latency>\t<12 KB stride latency>\n");
 	for (int i = 8; i <= 31; i++)
@@ -40,17 +52,7 @@ int main(int argc, char *argv[])
 		fflush(stdout);
 	}
 	
-	printf("Memory read bandwith = ");
-	fflush(stdout);
-	timeD = getMemoryReadBandwith();
-	timeD = timeD * (2.4e9/1.0e9);
-	printf("%.2LF GB/sec\n\n", timeD);
 	
-	printf("Memory write bandwith = ");
-	fflush(stdout);
-	timeD = getMemoryWriteBandwith();
-	timeD = timeD * (2.4e9/1.0e9);
-	printf("%.2LF GB/sec\n\n", timeD);
 	
 	exit(1);
 }
