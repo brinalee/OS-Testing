@@ -687,7 +687,7 @@ long double getMemoryReadBandwith(void)
 		//fflush(stdout);
 		for(i = 0; i < arrLen; i++)
 		{
-			ref1 = arr[i];
+			ref1 += arr[i];
 		}
 	}
 	time2 = rdtsc();
